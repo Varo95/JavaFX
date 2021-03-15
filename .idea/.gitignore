@@ -1,0 +1,14 @@
+# Default ignored files
+/shelf/
+/workspace.xml
+/../target/
+/compiler.xml
+/encodings.xml
+/jarRepositories.xml
+/misc.xml
+/vcs.xml
+# Datasource local storage ignored files
+/../../../../../../:\Users\alvar\IdeaProjects\VitalAsistencia\.idea/dataSources/
+/dataSources.local.xml
+# Editor-based HTTP Client requests
+/httpRequests/
