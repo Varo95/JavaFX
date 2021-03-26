@@ -34,7 +34,6 @@ public class PrimaryController {
         muestraInfo(null);
         configurarTabla();
         //Cargar de la base de datos!
-        PersonaDAO.getInstance();
         List<Persona> todas=PersonaDAO.listarTodas();
         tablapersonas.setItems(FXCollections.observableArrayList(todas));
         tablapersonas.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
@@ -69,5 +68,14 @@ public class PrimaryController {
     private void guardar(){
         RepositoryUtilities r=new RepositoryUtilities();
         r.saveFile("lista.xml");
+    }
+    @FXML
+    private void addPersona(Persona p){
+        PersonaDAO.addPersona(p);
+    }
+    @FXML
+    private void removePersona(){
+        Persona p=tablapersonas.getSelectionModel().getSelectedItem();
+        System.out.println(PersonaDAO.removePersona(p));
     }
 }

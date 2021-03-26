@@ -1,34 +1,18 @@
 package com.Alvaro.model;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
-@XmlRootElement(name="repository")
-@XmlAccessorType(XmlAccessType.FIELD)
+
 public class PersonaDAO extends Persona implements Serializable {
 
-    @XmlElement(name="persona")
     private static List<Persona> lista;
 
-//-----------------------Singleton-------------------
-    private static PersonaDAO instance;
-    public static PersonaDAO getInstance(){
-        if(instance==null){
-            instance=new PersonaDAO();
-        }
-        return instance;
-    }
-    private PersonaDAO(){
-        lista=new ArrayList<Persona>();
-    }
-//---------------------------------------------------
-
     public static List<Persona> listarTodas(){
-        exampledata();
+        if(lista==null){
+            lista=new ArrayList<>();
+            exampledata();
+        }
         return lista;
     }
 
@@ -36,6 +20,15 @@ public class PersonaDAO extends Persona implements Serializable {
         boolean result=false;
         if(p!=null && !lista.contains(p)) {
             lista.add(p);
+            result=true;
+        }
+        return result;
+    }
+
+    public static boolean removePersona(Persona p){
+        boolean result=false;
+        if(p!=null && lista.contains(p)){
+            lista.remove(p);
             result=true;
         }
         return result;
