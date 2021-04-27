@@ -1,7 +1,8 @@
 package com.Alvaro.utilities;
 
-import com.Alvaro.model.Persona;
-import com.Alvaro.model.PersonaDAO;
+import com.Alvaro.model.task.Task;
+import com.Alvaro.model.worker.Worker;
+import com.Alvaro.model.worker.WorkerDAO;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -13,23 +14,32 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.io.File;
 import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.List;
 
-@XmlRootElement(name="repository")
+@XmlRootElement(name="Repository")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class RepositoryUtilities implements Serializable {
 
-    @XmlElement(name="persona")
-    private List<Persona> lista=PersonaDAO.listarTodas();
+    @XmlElement(name="Worker")
+    private List<Worker> workerlist;
+    @XmlElement(name="Task")
+    private List<Task> tasklist;
 
-    public void saveFile(String path) {
+    public void saveFile(String path, String datatype) {
         JAXBContext jaxbC;
         try {
             //TODO cambiar la clase que instancia JAXBContext
             jaxbC = JAXBContext.newInstance(RepositoryUtilities.class);
-            Marshaller m= jaxbC.createMarshaller();
+            Marshaller m = jaxbC.createMarshaller();
             m.setProperty(m.JAXB_FORMATTED_OUTPUT, true);
-            m.marshal(lista, new File(path));
+            if (datatype == "Worker") {
+                workerlist=WorkerDAO.listAll();
+                m.marshal(workerlist, new File(path));
+            } else if (datatype == "Task") {
+                tasklist=new ArrayList<>();
+                m.marshal(tasklist, new File(path));
+            }
         } catch (JAXBException e) {
             e.printStackTrace();
         }
@@ -38,10 +48,10 @@ public class RepositoryUtilities implements Serializable {
     public void loadFile(String path) {
         JAXBContext jaxbC;
         try {
-            jaxbC = JAXBContext.newInstance(Persona.class);
+            jaxbC = JAXBContext.newInstance(Worker.class);
             Unmarshaller m= jaxbC.createUnmarshaller();
-            List<Persona> newr=(List<Persona>) m.unmarshal(new File(path));
-            PersonaDAO.loadlista(newr);
+            List<Worker> newr=(List<Worker>) m.unmarshal(new File(path));
+            WorkerDAO.loadList(newr);
         } catch (JAXBException e) {
             e.printStackTrace();
         }

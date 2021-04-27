@@ -1,81 +1,157 @@
 package com.Alvaro.controllers;
 
-import com.Alvaro.model.Persona;
-import com.Alvaro.model.PersonaDAO;
+import com.Alvaro.App;
+import com.Alvaro.model.DataConnection;
+import com.Alvaro.model.worker.Worker;
+import com.Alvaro.model.worker.WorkerDAO;
 import com.Alvaro.utilities.RepositoryUtilities;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.collections.FXCollections;
+import javafx.beans.value.ObservableValue;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.control.Label;
-import javafx.scene.control.TableColumn;
-import javafx.scene.control.TableView;
+import javafx.scene.control.*;
+import javafx.stage.Stage;
 
-import java.util.List;
+import java.io.IOException;
 
 public class PrimaryController {
 
     @FXML
-    private Label dnilabel;
+    private Label addresslabel;
     @FXML
-    private Label nombrelabel;
+    private Label phonelabel;
     @FXML
-    private Label descripcionlabel;
+    private Label hnormal_label;
+    @FXML
+    private Label hfestive_label;
+    @FXML
+    private Label hnight_label;
+    @FXML
+    private Label hnfestives_label;
+    @FXML
+    private Label hextras_label;
+    @FXML
+    private Button tasksbutton;
+    @FXML
+    private Button editWorker;
+    @FXML
+    private Button deleteWorker;
+    @FXML
+    private TableView<Worker> workerTable;
+    @FXML
+    private TableColumn<Worker, String> surname_colum;
+    @FXML
+    private TableColumn<Worker, String> name_colum;
+    @FXML
+    private SplitPane primarySplitPane;
+
+    private ObservableList<Worker> list;
+
+    private DataConnection dc;
 
     @FXML
-    private TableView<Persona> tablapersonas;
-    @FXML
-    private TableColumn<Persona,String> dniColumna;
-    @FXML
-    private TableColumn<Persona,String> nombreColumna;
-
-    @FXML
-    protected void initialize(){
+    protected void initialize() {
         System.out.println("Cargando...");
-        muestraInfo(null);
-        configurarTabla();
+        dc=new DataConnection("localhost","vital","root","");
+        //Desactiva el dragg del splitpanel
+        final double pos = 0.34;
+        SplitPane.Divider divider = primarySplitPane.getDividers().get(0);
+        divider.positionProperty().addListener(
+                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
+                {
+                    divider.setPosition(pos);
+                });
+        //--------
+        showInfo(null);
+        configureTable();
         //Cargar de la base de datos!
-        List<Persona> todas=PersonaDAO.listarTodas();
-        tablapersonas.setItems(FXCollections.observableArrayList(todas));
-        tablapersonas.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            muestraInfo(newValue);
+        list = WorkerDAO.listAll();
+        workerTable.setItems(list);
+        workerTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
+            showInfo(newValue);
         });
     }
 
-    private void configurarTabla(){
-        dniColumna.setCellValueFactory(cadapersona->{
-            SimpleStringProperty v=new SimpleStringProperty();
-            v.setValue(cadapersona.getValue().getDni());
+    private void configureTable() {
+        name_colum.setCellValueFactory(eachWorker -> {
+            SimpleStringProperty v = new SimpleStringProperty();
+            v.setValue(eachWorker.getValue().getName());
             return v;
         });
-        nombreColumna.setCellValueFactory(cadapersona->{
-            SimpleStringProperty v=new SimpleStringProperty();
-            v.setValue(cadapersona.getValue().getNombre());
+        surname_colum.setCellValueFactory(eachWorker -> {
+            SimpleStringProperty v = new SimpleStringProperty();
+            v.setValue(eachWorker.getValue().getSurnames());
             return v;
         });
     }
-    private void muestraInfo(Persona p){
-        if(p!=null) {
-            dnilabel.setText(p.getDni());
-            nombrelabel.setText(p.getNombre());
-            descripcionlabel.setText(p.getDescripcion());
-        }else{
-            dnilabel.setText("");
-            nombrelabel.setText("");
-            descripcionlabel.setText("");
+
+    private void showInfo(Worker p) {
+        if (p != null) {
+            addresslabel.setText(p.getAddress());
+            phonelabel.setText(p.getPhone());
+            tasksbutton.setDisable(false);
+            deleteWorker.setDisable(false);
+            editWorker.setDisable(false);
+            //Consultas a las horas del mes que ha realizado?
+            /*hnormal_label.setText();
+            hfestive_label.setText();
+            hnight_label.setText();
+            hnfestives_label.setText();
+            hextras_label.setText();*/
+        } else {
+            addresslabel.setText("");
+            phonelabel.setText("");
+            hnormal_label.setText("");
+            hfestive_label.setText("");
+            hnight_label.setText("");
+            hnfestives_label.setText("");
+            hextras_label.setText("");
+            tasksbutton.setDisable(true);
+            deleteWorker.setDisable(true);
+            editWorker.setDisable(true);
         }
     }
+
     @FXML
-    private void guardar(){
-        RepositoryUtilities r=new RepositoryUtilities();
-        r.saveFile("lista.xml");
+    private void save_xml() {
+        RepositoryUtilities r = new RepositoryUtilities();
+        r.saveFile("workers.xml","Worker");
+    }
+
+    @FXML
+    public void addWorker(Worker w) {
+        WorkerDAO.addWorker(w);
+    }
+
+    @FXML
+    private void removeWorker() {
+        Worker p = workerTable.getSelectionModel().getSelectedItem();
+        System.out.println(WorkerDAO.removeWorker(p));
     }
     @FXML
-    private void addPersona(Persona p){
-        PersonaDAO.addPersona(p);
+    private void show_worker_tasks() throws IOException {
+        System.out.println("Cargando Tareas");
+        String workerName=null;
+        String workerSurname=null;
+        if(workerTable.getSelectionModel().selectedItemProperty().get()!=null) {
+            workerName = workerTable.getSelectionModel().selectedItemProperty().get().getName();
+            workerSurname = workerTable.getSelectionModel().selectedItemProperty().get().getSurnames();
+        }
+        try {
+            if(workerName!=null && workerSurname!=null)
+            App.loadScene(new Stage(), "secondary", "Tareas de "+workerName+" "+workerSurname);
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
+
     @FXML
-    private void removePersona(){
-        Persona p=tablapersonas.getSelectionModel().getSelectedItem();
-        System.out.println(PersonaDAO.removePersona(p));
+    private void about() {
+        System.out.println("Cargando About");
+        try {
+            App.loadScene(new Stage(), "about", "Sobre la App");
+        }catch (IOException e){
+            e.printStackTrace();
+        }
     }
 }
