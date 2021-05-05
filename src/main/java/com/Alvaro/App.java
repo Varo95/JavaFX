@@ -26,23 +26,22 @@ public class App extends Application {
         stage.show();
     }
 
-    public static void setRoot(String fxml) throws IOException {
-        scene.setRoot(loadFXML(fxml));
-    }
-
     private static Parent loadFXML(String fxml) throws IOException {
         FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
         return fxmlLoader.load();
     }
 
-    public static void loadScene(Stage stage, String fxml, String title) throws IOException{
-        FXMLLoader fxmlLoader = new FXMLLoader(App.class.getResource(fxml + ".fxml"));
-        Parent p=fxmlLoader.load();
+    public static void loadScene(Stage stage, String fxml, String title) throws IOException {
+        Parent p = loadFXML(fxml);
         stage.setScene(new Scene(p));
         stage.getIcons().add(new Image(App.class.getResourceAsStream("vitalicon.png")));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle(title);
         stage.showAndWait();
+    }
+
+    public static void closeScene(Stage stage) {
+        stage.close();
     }
 
     public static void main(String[] args) {

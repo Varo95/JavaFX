@@ -11,7 +11,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="Archivo">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#save_xml" text="Guardar XML" />
+              <MenuItem mnemonicParsing="false" onAction="#save_xml" text="Guardar Conexion" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Ayuda">
@@ -35,8 +35,8 @@
                   </TableView>
                   <HBox layoutX="13.0" layoutY="333.0" spacing="15.0" AnchorPane.bottomAnchor="14.199999999999989">
                      <children>
-                         <Button mnemonicParsing="false" text="Añadir" StackPane.alignment="CENTER" />
-                         <Button fx:id="editWorker" mnemonicParsing="false" text="Editar" StackPane.alignment="CENTER" />
+                         <Button fx:id="addWorker" mnemonicParsing="false" onAction="#addWorker" text="Añadir" StackPane.alignment="CENTER" />
+                         <Button fx:id="editWorker" mnemonicParsing="false" onAction="#editWorker" text="Editar" StackPane.alignment="CENTER" />
                          <Button fx:id="deleteWorker" mnemonicParsing="false" onAction="#removeWorker" text="Eliminar" />
                      </children>
                   </HBox>
@@ -83,11 +83,17 @@
                         <Label fx:id="addresslabel" text="Label" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
                            <GridPane.margin>
                               <Insets />
-                           </GridPane.margin></Label>
+                           </GridPane.margin>
+                           <font>
+                              <Font size="14.0" />
+                           </font></Label>
                         <Label fx:id="phonelabel" text="Label" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
                            <GridPane.margin>
                               <Insets />
-                           </GridPane.margin></Label>
+                           </GridPane.margin>
+                           <font>
+                              <Font size="14.0" />
+                           </font></Label>
                         <Button fx:id="tasksbutton" mnemonicParsing="false" onAction="#show_worker_tasks" text="Ver tareas" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
                         <GridPane gridLinesVisible="true" GridPane.columnIndex="1" GridPane.rowIndex="3">
                           <columnConstraints>
@@ -129,14 +135,14 @@
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <DatePicker />
+                              <DatePicker fx:id="datepickerini" />
                               <Label text="Dia Final">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
                               </Label>
-                              <DatePicker />
-                              <Button mnemonicParsing="false" text="Ver resumen">
+                              <DatePicker fx:id="datepickerend" />
+                              <Button fx:id="resumebutton" mnemonicParsing="false" text="Ver resumen">
                                  <VBox.margin>
                                     <Insets top="10.0" />
                                  </VBox.margin>

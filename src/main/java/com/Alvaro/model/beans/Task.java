@@ -1,14 +1,10 @@
-package com.Alvaro.model.task;
+package com.Alvaro.model.beans;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import com.Alvaro.model.interfaces.ITask;
+
 import java.time.LocalDate;
 
-@XmlRootElement(name = "task")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Task implements Serializable {
+public class Task implements ITask.Task {
 
     private long id;
     private String user_com;

@@ -1,22 +1,22 @@
 package com.Alvaro.controllers;
 
-import java.io.IOException;
-import java.time.LocalDate;
-import java.util.ArrayList;
-
 import com.Alvaro.App;
-import com.Alvaro.model.DataConnection;
-import com.Alvaro.model.task.Task;
-import com.Alvaro.model.task.TaskDAO;
-import com.Alvaro.model.worker.Worker;
-import com.Alvaro.model.worker.WorkerDAO;
-import com.Alvaro.utilities.RepositoryUtilities;
+import com.Alvaro.model.DAO.TaskDAO;
+import com.Alvaro.model.beans.DataConnection;
+import com.Alvaro.model.beans.Task;
+import com.Alvaro.utilities.ConnectionUtil;
+import com.Alvaro.utilities.Dialog;
+import com.Alvaro.utilities.XMLUtil;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
+import javafx.stage.Stage;
+
+import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
 
 public class SecondaryController {
 
@@ -25,7 +25,7 @@ public class SecondaryController {
     @FXML
     private Label hextra_label;
     @FXML
-    private DatePicker datePicker;
+    private Label date_label;
     @FXML
     private CheckBox festive_checkbox;
     @FXML
@@ -42,26 +42,27 @@ public class SecondaryController {
     private TableColumn<Task, String> user_com_colum;
     @FXML
     private TableColumn<Task, String> address_colum;
-    /*@FXML
-    private SplitPane secondarySplitPane;*/
+
     private ObservableList<Task> list;
 
+    private static long id_worker;
+
     private DataConnection dc;
+    private Connection con;
 
     @FXML
-    protected void initialize(){
+    protected void initialize() {
         System.out.println("Cargando tareas...");
-        dc=new DataConnection("localhost","vital","root","");
-        /*final double pos = 0.40;
-        SplitPane.Divider divider = secondarySplitPane.getDividers().get(0);
-        divider.positionProperty().addListener(
-                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
-                {
-                    divider.setPosition(pos);
-                });*/
+        dc = XMLUtil.loadFile("connection.xml");
         showInfo(null);
+        con = null;
         configureTable();
-        list = TaskDAO.listAll();
+        try {
+            con = ConnectionUtil.connect(dc);
+        } catch (SQLException e) {
+            Dialog.showError("Error BBDD", "Error al establecer la conexión", e.toString());
+        }
+        list = FXCollections.observableArrayList(TaskDAO.getAllfromWorker(con, id_worker));
         taskTable.setItems(list);
         taskTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
             showInfo(newValue);
@@ -81,13 +82,11 @@ public class SecondaryController {
         });
     }
 
-    private void showInfo(Task t){
-        datePicker=new DatePicker();
+    private void showInfo(Task t) {
         if (t != null) {
-            hour_label.setText(t.getHours()+"");
-            hextra_label.setText(t.getEhours()+"");
-            datePicker.setValue(t.getDate());
-            datePicker.setPromptText(t.getDate().toString());
+            hour_label.setText(t.getHours() + "");
+            hextra_label.setText(t.getEhours() + "");
+            date_label.setText(t.getDate().getDayOfMonth() + "/" + t.getDate().getMonthValue() + "/" + t.getDate().getYear());
             deleteTask.setDisable(false);
             editTask.setDisable(false);
             festive_checkbox.setSelected(t.isFestive());
@@ -95,7 +94,7 @@ public class SecondaryController {
         } else {
             hour_label.setText("");
             hextra_label.setText("");
-            datePicker.setValue(null);
+            date_label.setText("");
             deleteTask.setDisable(true);
             editTask.setDisable(true);
             festive_checkbox.setSelected(false);
@@ -104,22 +103,56 @@ public class SecondaryController {
     }
 
     @FXML
-    public void addTask(Task t) {
-        //TaskDAO.addTask(t);
+    public void addTask() {
+        try {
+            TaskDAO t = new TaskDAO();
+            t.setId_worker(id_worker);
+            TaskController.setTask(t);
+            App.loadScene(new Stage(), "task", "Añadiendo Tarea");
+            if (!t.getUser_com().equals("")) {
+                list.add(t);
+            }
+            taskTable.refresh();
+        } catch (IOException e) {
+            Dialog.showError("Error en la vista", "Error durante la carga de la vista", "No se pudo cargar la vista de añadir");
+        }
     }
 
     @FXML
-    public void asdfg(){}
+    public void editTask() {
+        try {
+            TaskDAO t = new TaskDAO(taskTable.getSelectionModel().getSelectedItem().getId());
+            TaskController.setTask(t);
+            App.loadScene(new Stage(), "task", "Editando Tarea");
+            for (Task ta : list) {
+                if (ta.getId() == t.getId()) {
+                    ta.setUser_com(t.getUser_com());
+                    ta.setId(t.getId());
+                    ta.setUser_com(t.getUser_com());
+                    ta.setAddress(t.getAddress());
+                    ta.setDate(t.getDate());
+                    ta.setHours(t.getHours());
+                    ta.setFestive(t.isFestive());
+                    ta.setNight(t.isNight());
+                    ta.setEhours(t.getEhours());
+                    ta.setId_worker(t.getId_worker());
+                }
+            }
+            taskTable.refresh();
+        } catch (IOException e) {
+            Dialog.showError("Error en la vista", "Error durante la carga de la vista", "No se pudo cargar la vista de editar");
+        }
+    }
 
     @FXML
     private void removeTask() {
-        Task t = taskTable.getSelectionModel().getSelectedItem();
-        //System.out.println(TaskDAO.removeTask(t));
+        TaskDAO t = new TaskDAO(taskTable.getSelectionModel().getSelectedItem().getId());
+        t.remove();
+        list.remove(taskTable.getSelectionModel().getSelectedItem());
     }
 
-    @FXML
-    private void save_xml() {
-        RepositoryUtilities r = new RepositoryUtilities();
-        r.saveFile("tasks.xml","Task");
+    public static void setId_worker(Long id_worker1) {
+        id_worker = id_worker1;
     }
+
 }

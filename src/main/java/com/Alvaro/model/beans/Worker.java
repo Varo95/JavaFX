@@ -1,28 +1,28 @@
-package com.Alvaro.model.worker;
+package com.Alvaro.model.beans;
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.io.Serializable;
+import com.Alvaro.model.interfaces.IWorker;
 
-@XmlRootElement(name="worker")
-@XmlAccessorType(XmlAccessType.FIELD)
-public class Worker implements Serializable {
+import java.util.List;
+
+public class Worker implements IWorker.Worker {
     private long id;
     private String name;
     private String surnames;
     private String address;
     private String phone;
+    private List<Task> tasks;
 
-    public Worker(long id, String name, String surnames, String address, String phone) {
+    public Worker(long id, String name, String surnames, String address, String phone, List<Task> tasks) {
         this.id = id;
         this.name = name;
         this.surnames = surnames;
         this.address = address;
         this.phone = phone;
+        this.tasks = tasks;
     }
-    public Worker(){
-        this(-1,"","","","");
+
+    public Worker() {
+        this(-1, "", "", "", "", null);
     }
 
     public long getId() {
@@ -57,11 +57,30 @@ public class Worker implements Serializable {
         this.address = address;
     }
 
-    public String getPhone(){
+    public String getPhone() {
         return phone;
     }
 
-    public void setPhone(String phone){
+    public void setPhone(String phone) {
         this.phone = phone;
     }
+
+    public List<Task> getTasks() {
+        return tasks;
+    }
+
+    public void setTasks(List<Task> tasks) {
+        this.tasks = tasks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Worker worker = (Worker) o;
+
+        return id == worker.id;
+    }
+
 }

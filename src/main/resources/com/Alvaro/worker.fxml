@@ -5,7 +5,7 @@
 <?import javafx.scene.layout.*?>
 <?import javafx.scene.text.*?>
 
-<AnchorPane prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.Alvaro.controllers.PrimaryController">
+<AnchorPane prefHeight="400.0" prefWidth="500.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.Alvaro.controllers.WorkerController">
    <children>
       <GridPane layoutX="139.0" layoutY="78.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" AnchorPane.topAnchor="0.0">
         <columnConstraints>
@@ -35,38 +35,43 @@
                <font>
                   <Font size="20.0" />
                </font></Label>
-            <TextField GridPane.columnIndex="1">
+            <TextField fx:id="workername" GridPane.columnIndex="1">
                <font>
                   <Font size="20.0" />
-               </font></TextField>
-            <TextField GridPane.columnIndex="1" GridPane.rowIndex="1">
+               </font>
+               <GridPane.margin>
+                  <Insets left="15.0" right="15.0" />
+               </GridPane.margin></TextField>
+            <TextField fx:id="workersurnames" GridPane.columnIndex="1" GridPane.rowIndex="1">
                <font>
                   <Font size="20.0" />
-               </font></TextField>
-            <TextField GridPane.columnIndex="1" GridPane.rowIndex="2">
+               </font>
+               <GridPane.margin>
+                  <Insets left="15.0" right="15.0" />
+               </GridPane.margin></TextField>
+            <TextField fx:id="workeraddress" GridPane.columnIndex="1" GridPane.rowIndex="2">
                <font>
                   <Font size="20.0" />
-               </font></TextField>
-            <TextField GridPane.columnIndex="1" GridPane.rowIndex="3">
+               </font>
+               <GridPane.margin>
+                  <Insets left="15.0" right="15.0" />
+               </GridPane.margin></TextField>
+            <TextField fx:id="workerphone" GridPane.columnIndex="1" GridPane.rowIndex="3">
                <font>
                   <Font size="20.0" />
-               </font></TextField>
+               </font>
+               <GridPane.margin>
+                  <Insets left="15.0" right="15.0" />
+               </GridPane.margin></TextField>
          </children>
          <padding>
             <Insets bottom="5.0" left="5.0" right="5.0" top="5.0" />
          </padding>
       </GridPane>
-       <HBox prefHeight="26.0" prefWidth="304.0" spacing="200.0" AnchorPane.bottomAnchor="25.0" AnchorPane.leftAnchor="75.0" AnchorPane.rightAnchor="75.0">
-           <children>
-               <Button disable="true" mnemonicParsing="false" text="Añadir">
-               <font>
-                  <Font size="15.0" />
-               </font></Button>
-               <Button disable="true" mnemonicParsing="false" text="Actualizar">
-               <font>
-                  <Font size="15.0" />
-               </font></Button>
-           </children>
-       </HBox>
+         <Button fx:id="addbutton" layoutX="218.0" layoutY="350.0" mnemonicParsing="false" onAction="#addOrEditWorker" text="Button">
+         <font>
+            <Font size="15.0" />
+         </font>
+      </Button>
    </children>
 </AnchorPane>

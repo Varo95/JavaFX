@@ -1,6 +1,13 @@
-package com.Alvaro.model;
+package com.Alvaro.model.beans;
 
-public class DataConnection {
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlRootElement;
+import java.io.Serializable;
+
+@XmlRootElement(name = "DataConnection")
+@XmlAccessorType(XmlAccessType.FIELD)
+public class DataConnection implements Serializable {
     private String host;
     private String db;
     private String user;
@@ -12,8 +19,9 @@ public class DataConnection {
         this.user = user;
         this.password = password;
     }
-    public DataConnection(){
-        this("","","","");
+
+    public DataConnection() {
+        this("", "", "", "");
     }
 
     public String getHost() {
