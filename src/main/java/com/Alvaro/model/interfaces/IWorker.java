@@ -1,31 +1,31 @@
 package com.Alvaro.model.interfaces;
 
 public interface IWorker {
-    public interface Worker {
-        public long getId();
+    interface Worker {
+        long getId();
 
-        public void setId(long id);
+        void setId(long id);
 
-        public String getName();
+        String getName();
 
-        public void setName(String name);
+        void setName(String name);
 
-        public String getSurnames();
+        String getSurnames();
 
-        public void setSurnames(String surnames);
+        void setSurnames(String surnames);
 
-        public String getAddress();
+        String getAddress();
 
-        public void setAddress(String address);
+        void setAddress(String address);
 
-        public String getPhone();
+        String getPhone();
 
-        public void setPhone(String phone);
+        void setPhone(String phone);
     }
 
-    public interface WorkerDAO {
-        public void save();
+    interface WorkerDAO {
+        void save();
 
-        public void remove();
+        void remove();
     }
 }

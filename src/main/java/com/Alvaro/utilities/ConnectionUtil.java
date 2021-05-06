@@ -9,16 +9,17 @@ import java.util.List;
 public class ConnectionUtil {
 
     public static Connection connect(DataConnection c) throws SQLException {
-        Connection conn = null;
+        Connection conn;
         if (c == null) {
             return null;
         }
         conn = DriverManager.getConnection("jdbc:mysql://" + c.getHost() + "/" + c.getDb(), c.getUser(), c.getPassword());
+        //checkStructure(conn);
         return conn;
     }
 
     public static ResultSet execQuery(Connection con, String q, List<Object> params) throws SQLException {
-        ResultSet result = null;
+        ResultSet result;
         if (con == null) {
             return null;
         }
@@ -55,33 +56,20 @@ public class ConnectionUtil {
         return 6;
     }
 
-    public static PreparedStatement prepareQuery(Connection con, String q, List params) throws SQLException {
-        PreparedStatement ps = null;
+    public static PreparedStatement prepareQuery(Connection con, String q, List<Object> params) throws SQLException {
+        PreparedStatement ps;
         ps = con.prepareStatement(q, Statement.RETURN_GENERATED_KEYS);
         if (params != null) {
             int i = 1;
             for (Object o : params) {
                 switch (is(params)) {
-                    case 0:
-                        ps.setInt(i++, (Integer) o);
-                        break;
-                    case 1:
-                        ps.setFloat(i++, (Float) o);
-                        break;
-                    case 2:
-                        ps.setDouble(i++, (Double) o);
-                        break;
-                    case 3:
-                        ps.setBoolean(i++, (Boolean) o);
-                        break;
-                    case 4:
-                        ps.setString(i++, (String) o);
-                        break;
-                    case 5:
-                        ps.setArray(i++, (Array) o);
-                        break;
-                    default:
-                        ps.setObject(i++, o);
+                    case 0 -> ps.setInt(i++, (Integer) o);
+                    case 1 -> ps.setFloat(i++, (Float) o);
+                    case 2 -> ps.setDouble(i++, (Double) o);
+                    case 3 -> ps.setBoolean(i++, (Boolean) o);
+                    case 4 -> ps.setString(i++, (String) o);
+                    case 5 -> ps.setArray(i++, (Array) o);
+                    default -> ps.setObject(i++, o);
                 }
             }
         }
@@ -106,5 +94,43 @@ public class ConnectionUtil {
             return result;
         }
 
+    }
+
+    public static void checkStructure(Connection con) {
+        try {
+            String sql1,sql2,sql3;
+                sql2 = "CREATE TABLE IF NOT EXISTS `task` (" +
+                        "  `id` bigint(20) NOT NULL AUTO_INCREMENT," +
+                        "  `user_com` varchar(256) NOT NULL," +
+                        "  `address` varchar(256) NOT NULL," +
+                        "  `day` date NOT NULL," +
+                        "  `hours` double NOT NULL," +
+                        "  `festive` tinyint(1) NOT NULL," +
+                        "  `night` tinyint(1) NOT NULL," +
+                        "  `hours_extra` double NOT NULL," +
+                        "  `id_worker` bigint(11) NOT NULL," +
+                        "  PRIMARY KEY (`id`)," +
+                        "  KEY `id_worker` (`id_worker`)" +
+                        ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
+                sql1= "CREATE TABLE IF NOT EXISTS `worker` (" +
+                        "  `id` bigint(20) NOT NULL AUTO_INCREMENT," +
+                        "  `name` varchar(256) NOT NULL," +
+                        "  `surnames` varchar(256) NOT NULL," +
+                        "  `address` varchar(256) NOT NULL," +
+                        "  `phone` varchar(256) NOT NULL," +
+                        "  PRIMARY KEY (`id`)" +
+                        ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
+                 sql3 = "ALTER TABLE `task`" +
+                         "  ADD CONSTRAINT `task_worker` FOREIGN KEY (`id_worker`) REFERENCES `worker` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;";
+            con.setAutoCommit(false);
+            ConnectionUtil.execUpdate(con, sql1, null, false);
+            ConnectionUtil.execUpdate(con, sql2, null, false);
+            ConnectionUtil.execUpdate(con,sql3,null,false);
+            con.commit();
+            con.setAutoCommit(true);
+
+        } catch (SQLException ex) {
+            Dialog.showError("ERROR", "Error creando tablas", ex.toString());
+        }
     }
 }

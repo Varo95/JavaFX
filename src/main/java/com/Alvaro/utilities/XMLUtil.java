@@ -23,15 +23,23 @@ public class XMLUtil {
     }
 
     public static DataConnection loadFile(String path) {
-        DataConnection result = null;
+        DataConnection result;
         JAXBContext jaxbC;
-        try {
-            jaxbC = JAXBContext.newInstance(DataConnection.class);
-            Unmarshaller um = jaxbC.createUnmarshaller();
-            result = (DataConnection) um.unmarshal(new File(path));
-        } catch (JAXBException e) {
-            result = new DataConnection("localhost", "vital", "root", "");
-            Dialog.showError("Error XML", "Leyendo XML", e.toString() + "/n" + "Hemos establecido una conexión por defecto");
+        File file = new File("connection.xml");
+        if (file.exists() && file.isFile() && path != null && !path.isEmpty()) {
+            try {
+                jaxbC = JAXBContext.newInstance(DataConnection.class);
+                Unmarshaller um = jaxbC.createUnmarshaller();
+                result = (DataConnection) um.unmarshal(new File(path));
+            } catch (JAXBException e) {
+                result = new DataConnection("localhost", "vital", "root", "");
+                Dialog.showError("Error XML", "Leyendo XML", e + "/n" + "Hemos establecido una conexión por defecto");
+            }
+        } else {
+            Dialog.showWarning("Aviso", "No existe el fichero xml", "Se creará un nuevo fichero xml con datos");
+            DataConnection dc = new DataConnection("localhost", "vital", "root", "");
+            saveFile("connection.xml", dc);
+            result = dc;
         }
         return result;
     }

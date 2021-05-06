@@ -10,6 +10,7 @@ import com.Alvaro.utilities.XMLUtil;
 import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -22,10 +23,10 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
         INSERT("INSERT INTO worker (name,surnames, address, phone) VALUES (?,?,?,?)"),
         ALL("SELECT * FROM worker"),
         GETBYID("SELECT * FROM worker WHERE id=?"),
-        UPDATE("UPDATE worker SET name = ?, surnames = ?, address = ?, phone = ?  WHERE id = ?"),
+        UPDATE("UPDATE worker SET name = ?, surnames = ?, address = ?, phone = ? WHERE id = ?"),
         //Funcion resumen de horas
-        GETRESUMEHOURS("SELECT task.day, task.hours, task.hours_extra, task.festive, task.night FROM worker, task " +
-                "WHERE task.id_worker=? AND task.day BETWEEN ? AND ?"),
+        GETRESUMEHOURS("SELECT task.day, task.hours, task.hours_extra, task.festive, task.night FROM task " +
+                "WHERE id_worker=? AND task.day BETWEEN ? AND ?"),
         //-----
         REMOVE("DELETE FROM worker WHERE id=?");
         private String q;
@@ -161,6 +162,31 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
             }
         }
         return list;
+    }
+
+    public static List<Task> getResumeHours(Connection con, long id_worker, LocalDate dateini, LocalDate dateend){
+        List<Task> result=null;
+        List<Object> params = new ArrayList<>();
+        params.add(id_worker);
+        params.add(dateini);
+        params.add(dateend);
+        queries q = queries.GETRESUMEHOURS;
+        try{
+            ResultSet rs = ConnectionUtil.execQuery(con, q.getQ(),params);
+            result=new ArrayList<>();
+            while(rs.next()){
+                Task t = new Task();
+                t.setDate(rs.getDate(1).toLocalDate());
+                t.setHours(rs.getDouble(2));
+                t.setEhours(rs.getDouble(3));
+                t.setFestive(rs.getBoolean(4));
+                t.setNight(rs.getBoolean(5));
+                result.add(t);
+            }
+        }catch (SQLException ex){
+            Dialog.showError("Error SQL", "SQL cargando el resumen", ex.toString());
+        }
+        return result;
     }
 
     //Equals

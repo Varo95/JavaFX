@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
 
-public class SecondaryController {
+public class SecondaryController extends Controllers {
 
     @FXML
     private Label hour_label;
@@ -47,15 +47,12 @@ public class SecondaryController {
 
     private static long id_worker;
 
-    private DataConnection dc;
-    private Connection con;
-
     @FXML
     protected void initialize() {
         System.out.println("Cargando tareas...");
-        dc = XMLUtil.loadFile("connection.xml");
+        DataConnection dc = XMLUtil.loadFile("connection.xml");
         showInfo(null);
-        con = null;
+        Connection con = null;
         configureTable();
         try {
             con = ConnectionUtil.connect(dc);
@@ -64,9 +61,7 @@ public class SecondaryController {
         }
         list = FXCollections.observableArrayList(TaskDAO.getAllfromWorker(con, id_worker));
         taskTable.setItems(list);
-        taskTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            showInfo(newValue);
-        });
+        taskTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showInfo(newValue));
     }
 
     private void configureTable() {
@@ -146,9 +141,12 @@ public class SecondaryController {
 
     @FXML
     private void removeTask() {
-        TaskDAO t = new TaskDAO(taskTable.getSelectionModel().getSelectedItem().getId());
-        t.remove();
-        list.remove(taskTable.getSelectionModel().getSelectedItem());
+        boolean confirm = Dialog.showConfirmation("Aviso", "Está apunto de borrar una trabajadora", "Este cambio no se puede deshacer, ¿Está seguro?");
+        if (confirm) {
+            TaskDAO t = new TaskDAO(taskTable.getSelectionModel().getSelectedItem().getId());
+            t.remove();
+            list.remove(taskTable.getSelectionModel().getSelectedItem());
+        }
     }
 
     public static void setId_worker(Long id_worker1) {

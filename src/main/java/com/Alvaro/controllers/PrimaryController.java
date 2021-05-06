@@ -20,9 +20,10 @@ import javafx.stage.Stage;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.time.LocalDate;
 import java.util.List;
 
-public class PrimaryController {
+public class PrimaryController extends Controllers {
 
     @FXML
     private Label addresslabel;
@@ -40,6 +41,8 @@ public class PrimaryController {
     private Label hextras_label;
     @FXML
     private Button tasksbutton;
+    @FXML
+    private Label resumelabel;
     @FXML
     private Button editWorker;
     @FXML
@@ -82,9 +85,7 @@ public class PrimaryController {
         //Cargar de la base de datos!
         list = FXCollections.observableArrayList(WorkerDAO.listAll(con));
         workerTable.setItems(list);
-        workerTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> {
-            showInfo(newValue);
-        });
+        workerTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showInfo(newValue));
     }
 
     private void configureTable() {
@@ -108,14 +109,16 @@ public class PrimaryController {
             deleteWorker.setDisable(false);
             editWorker.setDisable(false);
             datepickerini.setDisable(false);
-            datepickerend.setDisable(false);
-            resumebutton.setDisable(false);
-            //Consultas a las horas del mes que ha realizado?
-            /*hnormal_label.setText();
-            hfestive_label.setText();
-            hnight_label.setText();
-            hnfestives_label.setText();
-            hextras_label.setText();*/
+            datepickerini.valueProperty().addListener((ov, oldValue, newValue) -> {
+                datepickerend.setValue(newValue.plusDays(30));
+                if (datepickerend.isDisable()) {
+                    datepickerend.setDisable(false);
+                }
+                if (resumebutton.isDisable()) {
+                    resumebutton.setDisable(false);
+                }
+            });
+            resumelabel.setText("¡Resumen no actualizado!");
         } else {
             addresslabel.setText("");
             phonelabel.setText("");
@@ -130,6 +133,7 @@ public class PrimaryController {
             datepickerini.setDisable(true);
             datepickerend.setDisable(true);
             resumebutton.setDisable(true);
+            resumelabel.setText("");
         }
 
     }
@@ -176,9 +180,12 @@ public class PrimaryController {
 
     @FXML
     private void removeWorker() {
-        WorkerDAO p = new WorkerDAO(workerTable.getSelectionModel().getSelectedItem().getId());
-        p.remove();
-        list.remove(workerTable.getSelectionModel().getSelectedItem());
+        boolean confirm = Dialog.showConfirmation("Aviso","Está apunto de borrar una trabajadora","Este cambio no se puede deshacer, ¿Está seguro?");
+        if(confirm) {
+            WorkerDAO p = new WorkerDAO(workerTable.getSelectionModel().getSelectedItem().getId());
+            p.remove();
+            list.remove(workerTable.getSelectionModel().getSelectedItem());
+        }
     }
 
     @FXML
@@ -198,6 +205,39 @@ public class PrimaryController {
     }
 
     @FXML
+    private void resume() {
+        long id_worker = workerTable.getSelectionModel().getSelectedItem().getId();
+        LocalDate ini = datepickerini.getValue();
+        LocalDate end = datepickerend.getValue();
+        List<Task> resumed = WorkerDAO.getResumeHours(con, id_worker, ini, end);
+        double office_hours = 0;
+        double festive_hours = 0;
+        double night_hours = 0;
+        double festive_and_night_hours = 0;
+        double extra_hours = 0;
+        for (Task t : resumed) {
+            if (t.isFestive() && t.isNight()) {
+                festive_and_night_hours += t.getHours();
+            } else if (t.isFestive()) {
+                festive_hours += t.getHours();
+            } else if (t.isNight()) {
+                night_hours += t.getHours();
+            } else {
+                office_hours += t.getHours();
+            }
+            extra_hours += t.getEhours();
+        }
+        String workerName = workerTable.getSelectionModel().selectedItemProperty().get().getName();
+        //String workerSurnames = workerTable.getSelectionModel().selectedItemProperty().get().getSurnames();
+        resumelabel.setText("Resumen de " + workerName);
+        hnormal_label.setText(office_hours + " horas");
+        hfestive_label.setText(festive_hours + " horas");
+        hnight_label.setText(night_hours + " horas");
+        hnfestives_label.setText(festive_and_night_hours + " horas");
+        hextras_label.setText(extra_hours + " horas");
+    }
+
+    @FXML
     private void about() {
         System.out.println("Cargando About");
         try {
@@ -212,8 +252,6 @@ public class PrimaryController {
         SplitPane.Divider divider = primarySplitPane.getDividers().get(0);
         divider.positionProperty().addListener(
                 (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
-                {
-                    divider.setPosition(pos);
-                });
+                        divider.setPosition(pos));
     }
 }

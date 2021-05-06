@@ -9,19 +9,18 @@ import javafx.stage.Modality;
 import javafx.stage.Stage;
 
 import java.io.IOException;
+import java.util.Objects;
 
 /**
  * JavaFX App
  */
 public class App extends Application {
 
-    private static Scene scene;
-
     @Override
     public void start(Stage stage) throws IOException {
-        scene = new Scene(loadFXML("primary"), 640, 480);
+        Scene scene = new Scene(loadFXML("primary"), 640, 480);
         stage.setScene(scene);
-        stage.getIcons().add(new Image(App.class.getResourceAsStream("vitalicon.png")));
+        stage.getIcons().add(new Image(Objects.requireNonNull(App.class.getResourceAsStream("vitalicon.png"))));
         stage.setTitle(" Vital Asistencia");
         stage.show();
     }
@@ -34,7 +33,7 @@ public class App extends Application {
     public static void loadScene(Stage stage, String fxml, String title) throws IOException {
         Parent p = loadFXML(fxml);
         stage.setScene(new Scene(p));
-        stage.getIcons().add(new Image(App.class.getResourceAsStream("vitalicon.png")));
+        stage.getIcons().add(new Image(Objects.requireNonNull(App.class.getResourceAsStream("vitalicon.png"))));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle(title);
         stage.showAndWait();

@@ -5,6 +5,8 @@ import javafx.scene.control.Alert;
 import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
+import java.util.Objects;
+
 public class Dialog {
 
     public static void showError(String title, String header, String description) {
@@ -19,17 +21,33 @@ public class Dialog {
         showDialog(Alert.AlertType.INFORMATION, title, header, description);
     }
 
-    public static void showConfirmation(String title, String header, String description) {
-        showDialog(Alert.AlertType.CONFIRMATION, title, header, description);
+    public static boolean showConfirmation(String title, String header, String description) {
+        return showDialogBoolean(title, header, description);
     }
 
-    public static void showDialog(Alert.AlertType type, String title, String header, String description) {
+    private static void showDialog(Alert.AlertType type, String title, String header, String description) {
         Alert alert = new Alert(type);
-        Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
-        stage.getIcons().add(new Image(App.class.getResourceAsStream("vitalicon.png")));
+        addIcon((Stage) alert.getDialogPane().getScene().getWindow());
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(description);
         alert.showAndWait();
+    }
+    private static boolean showDialogBoolean(String title, String header, String description) {
+        boolean result=false;
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        addIcon((Stage) alert.getDialogPane().getScene().getWindow());
+        alert.setTitle(title);
+        alert.setHeaderText(header);
+        alert.setContentText(description);
+        alert.showAndWait();
+        if(alert.getResult().getButtonData().isDefaultButton()){
+            result=true;
+        }
+        return result;
+    }
+
+    private static void addIcon(Stage stage){
+        stage.getIcons().add(new Image(Objects.requireNonNull(App.class.getResourceAsStream("vitalicon.png"))));
     }
 }

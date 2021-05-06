@@ -4,47 +4,47 @@ import java.time.LocalDate;
 
 public interface ITask {
 
-    public interface Task {
-        public long getId();
+    interface Task {
+        long getId();
 
-        public void setId(long id);
+        void setId(long id);
 
-        public String getUser_com();
+        String getUser_com();
 
-        public void setUser_com(String user_com);
+        void setUser_com(String user_com);
 
-        public String getAddress();
+        String getAddress();
 
-        public void setAddress(String address);
+        void setAddress(String address);
 
-        public LocalDate getDate();
+        LocalDate getDate();
 
-        public void setDate(LocalDate date);
+        void setDate(LocalDate date);
 
-        public double getHours();
+        double getHours();
 
-        public void setHours(double hours);
+        void setHours(double hours);
 
-        public double getEhours();
+        double getEhours();
 
-        public void setEhours(double ehours);
+        void setEhours(double ehours);
 
-        public boolean isFestive();
+        boolean isFestive();
 
-        public void setFestive(boolean festive);
+        void setFestive(boolean festive);
 
-        public boolean isNight();
+        boolean isNight();
 
-        public void setNight(boolean night);
+        void setNight(boolean night);
 
-        public long getId_worker();
+        long getId_worker();
 
-        public void setId_worker(long id_worker);
+        void setId_worker(long id_worker);
     }
 
-    public interface TaskDAO {
-        public void save();
+    interface TaskDAO {
+        void save();
 
-        public void remove();
+        void remove();
     }
 }

@@ -23,7 +23,6 @@ public class TaskDAO extends Task implements ITask.TaskDAO {
         ALL("SELECT * FROM task"),
         ALLBYWORKER("SELECT * FROM task WHERE id_worker=?"),
         GETBYID("SELECT * FROM task WHERE id=?"),
-        FINDBYID("SELECT * FROM task WHERE id IN "), //<-- ojo con esta, hay formas más elegantes
         FINDBYNAME("SELECT * FROM task WHERE name LIKE ?"),
         UPDATE("UPDATE task SET user_com=?,address=?,day=?,hours=?,festive=?,night=?,hours_extra=? WHERE id=?"),
         REMOVE("DELETE FROM task WHERE id=?");

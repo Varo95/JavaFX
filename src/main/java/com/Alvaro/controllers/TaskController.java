@@ -10,7 +10,7 @@ import javafx.scene.control.DatePicker;
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
 
-public class TaskController {
+public class TaskController extends Controllers {
 
     @FXML
     private TextField taskuser_com;
