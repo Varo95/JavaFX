@@ -13,8 +13,13 @@ public class ConnectionUtil {
         if (c == null) {
             return null;
         }
-        conn = DriverManager.getConnection("jdbc:mysql://" + c.getHost() + "/" + c.getDb(), c.getUser(), c.getPassword());
-        //checkStructure(conn);
+        if(c.getType().equals("mySQL")) {
+            conn = DriverManager.getConnection("jdbc:mysql://" + c.getHost() + "/" + c.getDb(), c.getUser(), c.getPassword());
+        }else{
+            //jdbc:h2:file:C:/ruta,usuario,contraseña
+            conn = DriverManager.getConnection("jdbc:h2:~/" +c.getDb()+","+c.getUser()+","+c.getPassword());
+        }
+        checkStructure(conn, c.getType());
         return conn;
     }
 
@@ -96,40 +101,59 @@ public class ConnectionUtil {
 
     }
 
-    public static void checkStructure(Connection con) {
+    public static void checkStructure(Connection con, String type) {
         try {
-            String sql1, sql2, sql3;
-            sql1 = "CREATE TABLE IF NOT EXISTS `worker` (" +
-                    "  `id` bigint(20) NOT NULL AUTO_INCREMENT," +
-                    "  `name` varchar(256) NOT NULL," +
-                    "  `surnames` varchar(256) NOT NULL," +
-                    "  `address` varchar(256) NOT NULL," +
-                    "  `phone` varchar(256) NOT NULL," +
-                    "  PRIMARY KEY (`id`)" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
-            sql2 = "CREATE TABLE IF NOT EXISTS `task` (" +
-                    "  `id` bigint(20) NOT NULL AUTO_INCREMENT," +
-                    "  `user_com` varchar(256) NOT NULL," +
-                    "  `address` varchar(256) NOT NULL," +
-                    "  `day` date NOT NULL," +
-                    "  `hours` double NOT NULL," +
-                    "  `festive` tinyint(1) NOT NULL," +
-                    "  `night` tinyint(1) NOT NULL," +
-                    "  `hours_extra` double NOT NULL," +
-                    "  `id_worker` bigint(11) NOT NULL," +
-                    "  PRIMARY KEY (`id`)," +
-                    "  KEY `id_worker` (`id_worker`)" +
-                    ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
-            sql3 = "ALTER TABLE `task`" +
-                    "  ADD CONSTRAINT `task_worker` FOREIGN KEY (`id_worker`) REFERENCES `worker` (`id`)" +
-                    " ON DELETE NO ACTION ON UPDATE CASCADE;";
+            String sql1, sql2;
+            if(type.equals("mySQL")) {
+                sql1 = "CREATE TABLE IF NOT EXISTS worker (" +
+                        "  id bigint(20) NOT NULL AUTO_INCREMENT," +
+                        "  name varchar(256) NOT NULL," +
+                        "  surnames varchar(256) NOT NULL," +
+                        "  address varchar(256) NOT NULL," +
+                        "  phone varchar(256) NOT NULL," +
+                        "  PRIMARY KEY (id)" +
+                        ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
+                sql2 = "CREATE TABLE IF NOT EXISTS task (" +
+                        "  id bigint(20) NOT NULL AUTO_INCREMENT," +
+                        "  user_com varchar(256) NOT NULL," +
+                        "  address varchar(256) NOT NULL," +
+                        "  day date NOT NULL," +
+                        "  hours double NOT NULL," +
+                        "  festive tinyint(1) NOT NULL," +
+                        "  night tinyint(1) NOT NULL," +
+                        "  hours_extra double NOT NULL," +
+                        "  id_worker bigint(11) NOT NULL," +
+                        "  PRIMARY KEY (id)," +
+                        "  KEY id_worker (id_worker)," +
+                        " CONSTRAINT task_worker FOREIGN KEY (id_worker) REFERENCES worker (id)" +
+                        " ON DELETE NO ACTION ON UPDATE CASCADE" +
+                        ") ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;";
+            }else{
+                sql1 = "CREATE TABLE IF NOT EXISTS worker (" +
+                        "id LONG PRIMARY KEY auto_increment," +
+                        " name VARCHAR(255)," +
+                        " surnames VARCHAR(255)," +
+                        " address VARCHAR(255)," +
+                        " phone VARCHAR(255));";
+                sql2 = "CREATE TABLE IF NOT EXISTS task (" +
+                        "id LONG PRIMARY KEY auto_increment," +
+                        " user_com VARCHAR(255)," +
+                        " address VARCHAR(255)," +
+                        " day DATE," +
+                        " hours DOUBLE," +
+                        " festive BOOLEAN," +
+                        " night BOOLEAN," +
+                        " hours_extra DOUBLE," +
+                        " id_worker LONG," +
+                        " CONSTRAINT task_worker FOREIGN KEY (id_worker) REFERENCES worker (id)" +
+                        " ON DELETE NO ACTION ON UPDATE CASCADE" +
+                        ")";
+            }
             con.setAutoCommit(false);
             ConnectionUtil.execUpdate(con, sql1, null, false);
             ConnectionUtil.execUpdate(con, sql2, null, false);
-            ConnectionUtil.execUpdate(con, sql3, null, false);
             con.commit();
             con.setAutoCommit(true);
-
         } catch (SQLException ex) {
             Dialog.showError("ERROR", "Error creando tablas", ex.toString());
         }

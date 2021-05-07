@@ -26,6 +26,11 @@ public class WorkerController extends Controllers {
 
     @FXML
     protected void initialize() {
+        workerphone.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                workerphone.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
         if (worker.getId() != -1) {
             addbutton.setText("Actualizar");
             workername.setText(worker.getName());

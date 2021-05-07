@@ -9,20 +9,37 @@ import java.io.Serializable;
 @XmlRootElement(name = "DataConnection")
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DataConnection implements Serializable {
+
+    enum connectiontype{
+        MYSQL("mySQL"),
+        H2("H2");
+        private String ct;
+        connectiontype(String ct) {
+            this.ct =ct;
+        }
+        public String getCt(){return this.ct;}
+    }
+
     private String host;
     private String db;
     private String user;
     private String password;
+    private String type;
 
-    public DataConnection(String host, String db, String user, String password) {
+    public DataConnection(String host, String db, String user, String password, String type) {
         this.host = host;
         this.db = db;
         this.user = user;
         this.password = password;
+        if(type.equals(connectiontype.MYSQL.name())){
+            this.type = "mySQL";
+        }else{
+            this.type = "H2";
+        }
     }
 
     public DataConnection() {
-        this("", "", "", "");
+        this("","","","","");
     }
 
     public String getHost() {
@@ -55,5 +72,13 @@ public class DataConnection implements Serializable {
 
     public void setPassword(String password) {
         this.password = password;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
     }
 }

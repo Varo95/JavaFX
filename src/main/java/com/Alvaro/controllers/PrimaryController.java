@@ -23,6 +23,9 @@ import java.sql.SQLException;
 import java.time.LocalDate;
 import java.util.List;
 
+/**
+ * Controlador de la vista principal, donde cargan todas las trabajadoras
+ */
 public class PrimaryController extends Controllers {
 
     @FXML
@@ -88,6 +91,9 @@ public class PrimaryController extends Controllers {
         workerTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showInfo(newValue));
     }
 
+    /**
+     * Carga la información en la tabla de la izquierda
+     */
     private void configureTable() {
         name_colum.setCellValueFactory(eachWorker -> {
             SimpleStringProperty v = new SimpleStringProperty();
@@ -101,6 +107,11 @@ public class PrimaryController extends Controllers {
         });
     }
 
+    /**
+     * Muestra la información detallada de un elemento seleccionado de la tabla
+     *
+     * @param w trabajadora a mostrar información adicional
+     */
     private void showInfo(Worker w) {
         if (w != null) {
             addresslabel.setText(w.getAddress());
@@ -109,15 +120,14 @@ public class PrimaryController extends Controllers {
             deleteWorker.setDisable(false);
             editWorker.setDisable(false);
             datepickerini.setDisable(false);
+            datepickerend.setDisable(true);
+            resumebutton.setDisable(true);
             datepickerini.valueProperty().addListener((ov, oldValue, newValue) -> {
                 datepickerend.setValue(newValue.plusDays(30));
-                if (datepickerend.isDisable()) {
-                    datepickerend.setDisable(false);
-                }
-                if (resumebutton.isDisable()) {
-                    resumebutton.setDisable(false);
-                }
+                datepickerend.setDisable(false);
+                resumebutton.setDisable(false);
             });
+
             resumelabel.setText("¡Resumen no actualizado!");
         } else {
             addresslabel.setText("");
@@ -130,12 +140,8 @@ public class PrimaryController extends Controllers {
             tasksbutton.setDisable(true);
             deleteWorker.setDisable(true);
             editWorker.setDisable(true);
-            datepickerini.setDisable(true);
-            datepickerend.setDisable(true);
-            resumebutton.setDisable(true);
             resumelabel.setText("");
         }
-
     }
 
     @FXML
@@ -180,8 +186,8 @@ public class PrimaryController extends Controllers {
 
     @FXML
     private void removeWorker() {
-        boolean confirm = Dialog.showConfirmation("Aviso","Está apunto de borrar una trabajadora","Este cambio no se puede deshacer, ¿Está seguro?");
-        if(confirm) {
+        boolean confirm = Dialog.showConfirmation("Aviso", "Está apunto de borrar una trabajadora", "Este cambio no se puede deshacer, ¿Está seguro?");
+        if (confirm) {
             WorkerDAO p = new WorkerDAO(workerTable.getSelectionModel().getSelectedItem().getId());
             p.remove();
             list.remove(workerTable.getSelectionModel().getSelectedItem());
@@ -206,35 +212,37 @@ public class PrimaryController extends Controllers {
 
     @FXML
     private void resume() {
-        long id_worker = workerTable.getSelectionModel().getSelectedItem().getId();
-        LocalDate ini = datepickerini.getValue();
-        LocalDate end = datepickerend.getValue();
-        List<Task> resumed = WorkerDAO.getResumeHours(con, id_worker, ini, end);
-        double office_hours = 0;
-        double festive_hours = 0;
-        double night_hours = 0;
-        double festive_and_night_hours = 0;
-        double extra_hours = 0;
-        for (Task t : resumed) {
-            if (t.isFestive() && t.isNight()) {
-                festive_and_night_hours += t.getHours();
-            } else if (t.isFestive()) {
-                festive_hours += t.getHours();
-            } else if (t.isNight()) {
-                night_hours += t.getHours();
-            } else {
-                office_hours += t.getHours();
+        if(workerTable.getSelectionModel().getSelectedItem()!=null) {
+            long id_worker = workerTable.getSelectionModel().getSelectedItem().getId();
+            LocalDate ini = datepickerini.getValue();
+            LocalDate end = datepickerend.getValue();
+            List<Task> resumed = WorkerDAO.getResumeHours(con, id_worker, ini, end);
+            double office_hours = 0;
+            double festive_hours = 0;
+            double night_hours = 0;
+            double festive_and_night_hours = 0;
+            double extra_hours = 0;
+            for (Task t : resumed) {
+                if (t.isFestive() && t.isNight()) {
+                    festive_and_night_hours += t.getHours();
+                } else if (t.isFestive()) {
+                    festive_hours += t.getHours();
+                } else if (t.isNight()) {
+                    night_hours += t.getHours();
+                } else {
+                    office_hours += t.getHours();
+                }
+                extra_hours += t.getEhours();
             }
-            extra_hours += t.getEhours();
+            String workerName = workerTable.getSelectionModel().selectedItemProperty().get().getName();
+            //String workerSurnames = workerTable.getSelectionModel().selectedItemProperty().get().getSurnames();
+            resumelabel.setText("Resumen de " + workerName);
+            hnormal_label.setText(office_hours + " horas");
+            hfestive_label.setText(festive_hours + " horas");
+            hnight_label.setText(night_hours + " horas");
+            hnfestives_label.setText(festive_and_night_hours + " horas");
+            hextras_label.setText(extra_hours + " horas");
         }
-        String workerName = workerTable.getSelectionModel().selectedItemProperty().get().getName();
-        //String workerSurnames = workerTable.getSelectionModel().selectedItemProperty().get().getSurnames();
-        resumelabel.setText("Resumen de " + workerName);
-        hnormal_label.setText(office_hours + " horas");
-        hfestive_label.setText(festive_hours + " horas");
-        hnight_label.setText(night_hours + " horas");
-        hnfestives_label.setText(festive_and_night_hours + " horas");
-        hextras_label.setText(extra_hours + " horas");
     }
 
     @FXML

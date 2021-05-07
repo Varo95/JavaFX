@@ -5,6 +5,10 @@ import javafx.fxml.FXML;
 import java.io.IOException;
 import java.net.URISyntaxException;
 
+/**
+ * Controlador de la vista About
+ * El texto está en la propia vista debido a que son los datos del desarrollador.
+ */
 public class AboutController extends Controllers {
 
     @FXML
