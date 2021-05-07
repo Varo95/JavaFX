@@ -98,34 +98,35 @@ public class ConnectionUtil {
 
     public static void checkStructure(Connection con) {
         try {
-            String sql1,sql2,sql3;
-                sql2 = "CREATE TABLE IF NOT EXISTS `task` (" +
-                        "  `id` bigint(20) NOT NULL AUTO_INCREMENT," +
-                        "  `user_com` varchar(256) NOT NULL," +
-                        "  `address` varchar(256) NOT NULL," +
-                        "  `day` date NOT NULL," +
-                        "  `hours` double NOT NULL," +
-                        "  `festive` tinyint(1) NOT NULL," +
-                        "  `night` tinyint(1) NOT NULL," +
-                        "  `hours_extra` double NOT NULL," +
-                        "  `id_worker` bigint(11) NOT NULL," +
-                        "  PRIMARY KEY (`id`)," +
-                        "  KEY `id_worker` (`id_worker`)" +
-                        ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
-                sql1= "CREATE TABLE IF NOT EXISTS `worker` (" +
-                        "  `id` bigint(20) NOT NULL AUTO_INCREMENT," +
-                        "  `name` varchar(256) NOT NULL," +
-                        "  `surnames` varchar(256) NOT NULL," +
-                        "  `address` varchar(256) NOT NULL," +
-                        "  `phone` varchar(256) NOT NULL," +
-                        "  PRIMARY KEY (`id`)" +
-                        ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
-                 sql3 = "ALTER TABLE `task`" +
-                         "  ADD CONSTRAINT `task_worker` FOREIGN KEY (`id_worker`) REFERENCES `worker` (`id`) ON DELETE NO ACTION ON UPDATE CASCADE;";
+            String sql1, sql2, sql3;
+            sql1 = "CREATE TABLE IF NOT EXISTS `worker` (" +
+                    "  `id` bigint(20) NOT NULL AUTO_INCREMENT," +
+                    "  `name` varchar(256) NOT NULL," +
+                    "  `surnames` varchar(256) NOT NULL," +
+                    "  `address` varchar(256) NOT NULL," +
+                    "  `phone` varchar(256) NOT NULL," +
+                    "  PRIMARY KEY (`id`)" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
+            sql2 = "CREATE TABLE IF NOT EXISTS `task` (" +
+                    "  `id` bigint(20) NOT NULL AUTO_INCREMENT," +
+                    "  `user_com` varchar(256) NOT NULL," +
+                    "  `address` varchar(256) NOT NULL," +
+                    "  `day` date NOT NULL," +
+                    "  `hours` double NOT NULL," +
+                    "  `festive` tinyint(1) NOT NULL," +
+                    "  `night` tinyint(1) NOT NULL," +
+                    "  `hours_extra` double NOT NULL," +
+                    "  `id_worker` bigint(11) NOT NULL," +
+                    "  PRIMARY KEY (`id`)," +
+                    "  KEY `id_worker` (`id_worker`)" +
+                    ") ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8;";
+            sql3 = "ALTER TABLE `task`" +
+                    "  ADD CONSTRAINT `task_worker` FOREIGN KEY (`id_worker`) REFERENCES `worker` (`id`)" +
+                    " ON DELETE NO ACTION ON UPDATE CASCADE;";
             con.setAutoCommit(false);
             ConnectionUtil.execUpdate(con, sql1, null, false);
             ConnectionUtil.execUpdate(con, sql2, null, false);
-            ConnectionUtil.execUpdate(con,sql3,null,false);
+            ConnectionUtil.execUpdate(con, sql3, null, false);
             con.commit();
             con.setAutoCommit(true);
 

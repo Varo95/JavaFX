@@ -141,7 +141,7 @@ public class SecondaryController extends Controllers {
 
     @FXML
     private void removeTask() {
-        boolean confirm = Dialog.showConfirmation("Aviso", "Está apunto de borrar una trabajadora", "Este cambio no se puede deshacer, ¿Está seguro?");
+        boolean confirm = Dialog.showConfirmation("Aviso", "Está apunto de borrar una tarea", "Este cambio no se puede deshacer, ¿Está seguro?");
         if (confirm) {
             TaskDAO t = new TaskDAO(taskTable.getSelectionModel().getSelectedItem().getId());
             t.remove();
