@@ -16,8 +16,7 @@ public class ConnectionUtil {
         if(c.getType().equals("mySQL")) {
             conn = DriverManager.getConnection("jdbc:mysql://" + c.getHost() + "/" + c.getDb(), c.getUser(), c.getPassword());
         }else{
-            //jdbc:h2:file:C:/ruta,usuario,contraseña
-            conn = DriverManager.getConnection("jdbc:h2:~/" +c.getDb()+","+c.getUser()+","+c.getPassword());
+            conn = DriverManager.getConnection("jdbc:h2:./" +c.getDb()+";USER="+c.getUser()+";PASSWORD="+c.getPassword());
         }
         checkStructure(conn, c.getType());
         return conn;

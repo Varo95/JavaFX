@@ -73,21 +73,19 @@
          </TextField>
          <VBox fillWidth="false" maxHeight="54.0" maxWidth="204.0" minHeight="15.0" minWidth="0.0"
                prefHeight="54.0" prefWidth="137.0" spacing="15.0">
-            <children>
-               <CheckBox fx:id="festivecb" mnemonicParsing="false" text="¿Festivo?">
-                  <font>
-                     <Font size="14.0"/>
-                  </font>
-               </CheckBox>
-               <CheckBox fx:id="nightcb" mnemonicParsing="false" text="¿Nocturno?">
-                  <font>
-                     <Font size="14.0"/>
-                  </font>
-               </CheckBox>
-            </children>
             <HBox.margin>
                <Insets top="15.0"/>
             </HBox.margin>
+            <CheckBox fx:id="festivecb" mnemonicParsing="false" text="¿Festivo?">
+               <font>
+                  <Font size="14.0"/>
+               </font>
+            </CheckBox>
+            <CheckBox fx:id="nightcb" mnemonicParsing="false" text="¿Nocturno?">
+               <font>
+                  <Font size="14.0"/>
+               </font>
+            </CheckBox>
          </VBox>
       </HBox>
       <Label text="Horas extras" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
