@@ -1,7 +1,6 @@
 package com.Alvaro.controllers;
 
 import com.Alvaro.App;
-import com.Alvaro.model.DAO.TaskDAO;
 import com.Alvaro.model.DAO.WorkerDAO;
 import com.Alvaro.model.beans.DataConnection;
 import com.Alvaro.model.beans.Task;
@@ -72,7 +71,7 @@ public class PrimaryController extends Controllers {
 
     @FXML
     protected void initialize() {
-        System.out.println("Cargando...");
+        System.out.println("Cargando vista principal...");
         dc = XMLUtil.loadFile("connection.xml");
         //Desactiva el dragg del splitpanel
         splitpanelnotdraggable();
@@ -94,7 +93,7 @@ public class PrimaryController extends Controllers {
     /**
      * Carga la información en la tabla de la izquierda
      */
-    private void configureTable() {
+    void configureTable() {
         name_colum.setCellValueFactory(eachWorker -> {
             SimpleStringProperty v = new SimpleStringProperty();
             v.setValue(eachWorker.getValue().getName());
@@ -125,9 +124,15 @@ public class PrimaryController extends Controllers {
             datepickerini.valueProperty().addListener((ov, oldValue, newValue) -> {
                 datepickerend.setValue(newValue.plusDays(30));
                 datepickerend.setDisable(false);
+                datepickerend.setDayCellFactory(picker -> new DateCell() {
+                    public void updateItem(LocalDate item, boolean empty) {
+                        super.updateItem(item, empty);
+                        if (item.getDayOfYear() < datepickerini.getValue().getDayOfYear())
+                            setDisable(true);
+                    }
+                });
                 resumebutton.setDisable(false);
             });
-
             resumelabel.setText("¡Resumen no actualizado!");
         } else {
             addresslabel.setText("");
@@ -166,53 +171,55 @@ public class PrimaryController extends Controllers {
 
     @FXML
     private void editWorker() {
-        try {
-            WorkerDAO w = new WorkerDAO(workerTable.getSelectionModel().getSelectedItem().getId());
-            WorkerController.setWorker(w);
-            App.loadScene(new Stage(), "worker", "Editando trabajadora");
-            for (Worker wor : list) {
-                if (wor.getId() == w.getId()) {
-                    wor.setName(w.getName());
-                    wor.setSurnames(w.getSurnames());
-                    wor.setAddress(w.getAddress());
-                    wor.setPhone(w.getPhone());
+        if (workerTable.getSelectionModel().getSelectedItem() != null) {
+            try {
+                WorkerDAO w = new WorkerDAO(workerTable.getSelectionModel().getSelectedItem().getId());
+                WorkerController.setWorker(w);
+                App.loadScene(new Stage(), "worker", "Editando trabajadora");
+                for (Worker wor : list) {
+                    if (wor.getId() == w.getId()) {
+                        wor.setName(w.getName());
+                        wor.setSurnames(w.getSurnames());
+                        wor.setAddress(w.getAddress());
+                        wor.setPhone(w.getPhone());
+                    }
                 }
+                workerTable.refresh();
+            } catch (IOException e) {
+                Dialog.showError("Error en la vista", "No se pudo cargar la vista de editar trabajadora", e.toString());
             }
-            workerTable.refresh();
-        } catch (IOException e) {
-            Dialog.showError("Error en la vista", "No se pudo cargar la vista de editar trabajadora", e.toString());
         }
     }
 
     @FXML
     private void removeWorker() {
-        boolean confirm = Dialog.showConfirmation("Aviso", "Está apunto de borrar una trabajadora", "Este cambio no se puede deshacer, ¿Está seguro?");
-        if (confirm) {
-            WorkerDAO p = new WorkerDAO(workerTable.getSelectionModel().getSelectedItem().getId());
-            p.remove();
-            list.remove(workerTable.getSelectionModel().getSelectedItem());
+        if (workerTable.getSelectionModel().getSelectedItem() != null) {
+            boolean confirm = Dialog.showConfirmation("Aviso", "Está apunto de borrar una trabajadora", "Este cambio no se puede deshacer, se borrarán todas las tareas asignadas a ella, ¿Está seguro?");
+            if (confirm) {
+                WorkerDAO p = new WorkerDAO(workerTable.getSelectionModel().getSelectedItem().getId());
+                p.remove();
+                list.remove(workerTable.getSelectionModel().getSelectedItem());
+            }
         }
     }
 
     @FXML
     private void show_worker_tasks() {
-        List<Task> tasks = workerTable.getSelectionModel().getSelectedItem().getTasks();
-        if (tasks == null) {
-            workerTable.getSelectionModel().getSelectedItem().setTasks(TaskDAO.getAllfromWorker(con, workerTable.getSelectionModel().getSelectedItem().getId()));
-        }
-        String workerName = workerTable.getSelectionModel().selectedItemProperty().get().getName();
-        String workerSurname = workerTable.getSelectionModel().selectedItemProperty().get().getSurnames();
-        try {
-            SecondaryController.setId_worker(workerTable.getSelectionModel().getSelectedItem().getId());
-            App.loadScene(new Stage(), "secondary", "Tareas de " + workerName + " " + workerSurname);
-        } catch (IOException e) {
-            Dialog.showError("Error en la vista", "No se pudo cargar la vista de tareas trabajadora", e.toString());
+        if (workerTable.getSelectionModel().getSelectedItem() != null) {
+            String workerName = workerTable.getSelectionModel().selectedItemProperty().get().getName();
+            String workerSurname = workerTable.getSelectionModel().selectedItemProperty().get().getSurnames();
+            try {
+                SecondaryController.setWorker(new WorkerDAO (workerTable.getSelectionModel().getSelectedItem().getId()));
+                App.loadScene(new Stage(), "secondary", "Tareas de " + workerName + " " + workerSurname);
+            } catch (IOException e) {
+                Dialog.showError("Error en la vista", "No se pudo cargar la vista de tareas trabajadora", e.toString());
+            }
         }
     }
 
     @FXML
     private void resume() {
-        if(workerTable.getSelectionModel().getSelectedItem()!=null) {
+        if (workerTable.getSelectionModel().getSelectedItem() != null) {
             long id_worker = workerTable.getSelectionModel().getSelectedItem().getId();
             LocalDate ini = datepickerini.getValue();
             LocalDate end = datepickerend.getValue();
@@ -247,7 +254,6 @@ public class PrimaryController extends Controllers {
 
     @FXML
     private void about() {
-        System.out.println("Cargando About");
         try {
             App.loadScene(new Stage(), "about", "Sobre la App");
         } catch (IOException e) {

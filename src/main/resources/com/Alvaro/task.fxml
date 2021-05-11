@@ -1,118 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.geometry.Insets?>
-<?import javafx.scene.control.Button?>
-<?import javafx.scene.control.CheckBox?>
-<?import javafx.scene.control.DatePicker?>
-<?import javafx.scene.control.Label?>
-<?import javafx.scene.control.TextField?>
-<?import javafx.scene.layout.AnchorPane?>
-<?import javafx.scene.layout.ColumnConstraints?>
-<?import javafx.scene.layout.GridPane?>
-<?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.RowConstraints?>
-<?import javafx.scene.layout.VBox?>
-<?import javafx.scene.text.Font?>
+<?import javafx.geometry.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.*?>
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="365.0"
-            prefWidth="504.0" xmlns="http://javafx.com/javafx/15.0.1" xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="com.Alvaro.controllers.TaskController">
-   <GridPane alignment="CENTER" layoutX="138.0" layoutY="141.0" AnchorPane.bottomAnchor="50.0"
-             AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="365.0" prefWidth="504.0" xmlns="http://javafx.com/javafx/11.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.Alvaro.controllers.TaskController">
+   <GridPane alignment="CENTER" layoutX="138.0" layoutY="141.0" AnchorPane.bottomAnchor="50.0" AnchorPane.leftAnchor="5.0" AnchorPane.rightAnchor="5.0" AnchorPane.topAnchor="5.0">
       <columnConstraints>
-         <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="183.0"/>
-         <ColumnConstraints hgrow="SOMETIMES" maxWidth="456.0" minWidth="10.0" prefWidth="417.0"/>
+         <ColumnConstraints hgrow="SOMETIMES" maxWidth="295.0" minWidth="10.0" prefWidth="183.0" />
+         <ColumnConstraints hgrow="SOMETIMES" maxWidth="456.0" minWidth="10.0" prefWidth="417.0" />
       </columnConstraints>
       <rowConstraints>
-         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
-         <RowConstraints maxHeight="66.4" minHeight="10.0" prefHeight="66.4" vgrow="SOMETIMES"/>
-         <RowConstraints maxHeight="55.39999999999999" minHeight="10.0" prefHeight="46.000000000000014"
-                         vgrow="SOMETIMES"/>
-         <RowConstraints maxHeight="77.4" minHeight="10.0" prefHeight="77.4" vgrow="SOMETIMES"/>
-         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES"/>
+         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
+         <RowConstraints maxHeight="66.4" minHeight="10.0" prefHeight="66.4" vgrow="SOMETIMES" />
+         <RowConstraints maxHeight="55.39999999999999" minHeight="10.0" prefHeight="46.000000000000014" vgrow="SOMETIMES" />
+         <RowConstraints maxHeight="77.4" minHeight="10.0" prefHeight="77.4" vgrow="SOMETIMES" />
+         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
       </rowConstraints>
       <Label text="Usuario/Comunidad" GridPane.halignment="CENTER" GridPane.valignment="CENTER">
          <font>
-            <Font size="14.0"/>
+            <Font size="14.0" />
          </font>
       </Label>
       <Label text="Dirección" GridPane.halignment="CENTER" GridPane.rowIndex="1" GridPane.valignment="CENTER">
          <font>
-            <Font size="14.0"/>
+            <Font size="14.0" />
          </font>
       </Label>
       <Label text="Horas" GridPane.halignment="CENTER" GridPane.rowIndex="3" GridPane.valignment="CENTER">
          <font>
-            <Font size="14.0"/>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label text="Horas extras" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
+         <font>
+            <Font size="14.0" />
+         </font>
+      </Label>
+      <Label text="Día" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
+         <font>
+            <Font size="14.0" />
          </font>
       </Label>
       <TextField fx:id="taskuser_com" GridPane.columnIndex="1">
          <font>
-            <Font size="20.0"/>
+            <Font size="20.0" />
          </font>
          <GridPane.margin>
-            <Insets left="15.0" right="15.0"/>
+            <Insets left="15.0" right="15.0" />
          </GridPane.margin>
       </TextField>
       <TextField fx:id="taskaddress" GridPane.columnIndex="1" GridPane.rowIndex="1">
          <font>
-            <Font size="20.0"/>
+            <Font size="20.0" />
          </font>
          <GridPane.margin>
-            <Insets left="15.0" right="15.0"/>
+            <Insets left="15.0" right="15.0" />
          </GridPane.margin>
       </TextField>
+      <DatePicker fx:id="taskdatepicker" showWeekNumbers="true" GridPane.columnIndex="1" GridPane.halignment="CENTER" GridPane.rowIndex="2" />
       <HBox spacing="25.0" GridPane.columnIndex="1" GridPane.rowIndex="3">
          <TextField fx:id="taskhours" prefHeight="44.0" prefWidth="206.0">
             <font>
-               <Font size="20.0"/>
+               <Font size="20.0" />
             </font>
             <HBox.margin>
-               <Insets left="15.0" top="15.0"/>
+               <Insets left="15.0" top="15.0" />
             </HBox.margin>
          </TextField>
-         <VBox fillWidth="false" maxHeight="54.0" maxWidth="204.0" minHeight="15.0" minWidth="0.0"
-               prefHeight="54.0" prefWidth="137.0" spacing="15.0">
+         <VBox fillWidth="false" maxHeight="54.0" maxWidth="204.0" minHeight="15.0" minWidth="0.0" prefHeight="54.0" prefWidth="137.0" spacing="15.0">
             <HBox.margin>
-               <Insets top="15.0"/>
+               <Insets top="15.0" />
             </HBox.margin>
             <CheckBox fx:id="festivecb" mnemonicParsing="false" text="¿Festivo?">
                <font>
-                  <Font size="14.0"/>
+                  <Font size="14.0" />
                </font>
             </CheckBox>
             <CheckBox fx:id="nightcb" mnemonicParsing="false" text="¿Nocturno?">
                <font>
-                  <Font size="14.0"/>
+                  <Font size="14.0" />
                </font>
             </CheckBox>
          </VBox>
       </HBox>
-      <Label text="Horas extras" GridPane.halignment="CENTER" GridPane.rowIndex="4" GridPane.valignment="CENTER">
-         <font>
-            <Font size="14.0"/>
-         </font>
-      </Label>
       <TextField fx:id="taske_hours" GridPane.columnIndex="1" GridPane.rowIndex="4">
          <font>
-            <Font size="20.0"/>
+            <Font size="20.0" />
          </font>
          <GridPane.margin>
-            <Insets left="15.0" right="153.0"/>
+            <Insets left="15.0" right="153.0" />
          </GridPane.margin>
       </TextField>
-      <Label text="Día" GridPane.halignment="CENTER" GridPane.rowIndex="2" GridPane.valignment="CENTER">
-         <font>
-            <Font size="14.0"/>
-         </font>
-      </Label>
-      <DatePicker fx:id="taskdatepicker" showWeekNumbers="true" GridPane.columnIndex="1" GridPane.halignment="CENTER"
-                  GridPane.rowIndex="2"/>
    </GridPane>
-   <Button fx:id="addbutton" layoutX="220.0" layoutY="319.0" mnemonicParsing="false" onAction="#addOrEditTask"
-           text="Button">
+   <Button fx:id="addbutton" layoutX="220.0" layoutY="319.0" mnemonicParsing="false" onAction="#addOrEditTask" text="Button">
       <font>
-         <Font size="15.0"/>
+         <Font size="15.0" />
       </font>
    </Button>
 </AnchorPane>

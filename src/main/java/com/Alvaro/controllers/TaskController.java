@@ -29,13 +29,23 @@ public class TaskController extends Controllers {
     @FXML
     private Button addbutton;
 
-    private boolean editingtask;
-
+    private boolean addingtask;
 
     private static TaskDAO task;
 
     @FXML
     protected void initialize() {
+        System.out.println("Cargando ventaña añadir/editar tarea...");
+        taskhours.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("^\\d*\\.?\\d*")) {
+                taskhours.setText(newValue.replaceAll("[^\\d*.?]", ""));
+            }
+        });
+        taske_hours.textProperty().addListener((observable, oldValue, newValue) -> {
+            if (!newValue.matches("^\\d*\\.?\\d*")) {
+                taske_hours.setText(newValue.replaceAll("[^\\d*.?]", ""));
+            }
+        });
         if (task.getId() != -1) {
             addbutton.setText("Actualizar");
             taskuser_com.setText(task.getUser_com());
@@ -45,10 +55,10 @@ public class TaskController extends Controllers {
             festivecb.setSelected(task.isFestive());
             nightcb.setSelected(task.isNight());
             taske_hours.setText(task.getEhours() + "");
-            editingtask = false;
+            addingtask = false;
         } else {
             addbutton.setText("Añadir");
-            editingtask = true;
+            addingtask = true;
         }
     }
 
@@ -70,15 +80,15 @@ public class TaskController extends Controllers {
             task.setEhours(Double.parseDouble(taske_hours.getText()));
         if (!taskuser_com.getText().equals("") && !taskaddress.getText().equals("") && taskdatepicker.getValue() != null && !taskhours.getText().equals("") && !taske_hours.getText().equals("")) {
             task.save();
-            if (editingtask)
+            if (addingtask)
                 Dialog.showInformation("", "Tarea añadida", "Se ha añadido correctamente a la base de datos");
             else
                 Dialog.showInformation("", "Tarea editada", "Se ha editado correctamente en la base de datos");
             App.closeScene((Stage) addbutton.getScene().getWindow());
-        } else if (editingtask)
-            Dialog.showWarning("Imposible editar", "Error al editar", "¡No puedes dejar ningún campo en blanco!");
-        else
+        } else if (addingtask)
             Dialog.showWarning("Imposible añadir", "Error al añadir", "¡No puedes dejar ningún campo en blanco!");
+        else
+            Dialog.showWarning("Imposible editar", "Error al editar", "¡No puedes dejar ningún campo en blanco!");
     }
 
     public static void setTask(TaskDAO t) {

@@ -2,9 +2,9 @@ package com.Alvaro.controllers;
 
 import com.Alvaro.App;
 import com.Alvaro.model.DAO.TaskDAO;
+import com.Alvaro.model.DAO.WorkerDAO;
 import com.Alvaro.model.beans.DataConnection;
 import com.Alvaro.model.beans.Task;
-import com.Alvaro.utilities.ConnectionUtil;
 import com.Alvaro.utilities.Dialog;
 import com.Alvaro.utilities.XMLUtil;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,8 +15,7 @@ import javafx.scene.control.*;
 import javafx.stage.Stage;
 
 import java.io.IOException;
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.Objects;
 
 public class SecondaryController extends Controllers {
 
@@ -31,8 +30,6 @@ public class SecondaryController extends Controllers {
     @FXML
     private CheckBox night_checkbox;
     @FXML
-    private Button addTask;
-    @FXML
     private Button editTask;
     @FXML
     private Button deleteTask;
@@ -45,21 +42,15 @@ public class SecondaryController extends Controllers {
 
     private ObservableList<Task> list;
 
-    private static long id_worker;
+    private static WorkerDAO worker;
 
     @FXML
     protected void initialize() {
-        System.out.println("Cargando tareas...");
+        System.out.println("Cargando vista secundaria...");
         DataConnection dc = XMLUtil.loadFile("connection.xml");
         showInfo(null);
-        Connection con = null;
         configureTable();
-        try {
-            con = ConnectionUtil.connect(dc);
-        } catch (SQLException e) {
-            Dialog.showError("Error BBDD", "Error al establecer la conexión", e.toString());
-        }
-        list = FXCollections.observableArrayList(TaskDAO.getAllfromWorker(con, id_worker));
+        list = FXCollections.observableArrayList(worker.getTasks());
         taskTable.setItems(list);
         taskTable.getSelectionModel().selectedItemProperty().addListener((observable, oldValue, newValue) -> showInfo(newValue));
     }
@@ -101,7 +92,7 @@ public class SecondaryController extends Controllers {
     public void addTask() {
         try {
             TaskDAO t = new TaskDAO();
-            t.setId_worker(id_worker);
+            t.setWorker(worker);
             TaskController.setTask(t);
             App.loadScene(new Stage(), "task", "Añadiendo Tarea");
             if (!t.getUser_com().equals("")) {
@@ -130,7 +121,7 @@ public class SecondaryController extends Controllers {
                     ta.setFestive(t.isFestive());
                     ta.setNight(t.isNight());
                     ta.setEhours(t.getEhours());
-                    ta.setId_worker(t.getId_worker());
+                    ta.setWorker(t.getWorker());
                 }
             }
             taskTable.refresh();
@@ -149,8 +140,8 @@ public class SecondaryController extends Controllers {
         }
     }
 
-    public static void setId_worker(Long id_worker1) {
-        id_worker = id_worker1;
+    public static void setWorker(WorkerDAO worker1) {
+        worker = Objects.requireNonNullElseGet(worker1, () -> new WorkerDAO(-1));
     }
 
 }

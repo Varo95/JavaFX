@@ -22,10 +22,11 @@ public class WorkerController extends Controllers {
 
     private static WorkerDAO worker;
 
-    private boolean editingworker;
+    private boolean addingworker;
 
     @FXML
     protected void initialize() {
+        System.out.println("Cargando ventana de añadir/editar trabajadora...");
         workerphone.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("\\d*")) {
                 workerphone.setText(newValue.replaceAll("[^\\d]", ""));
@@ -37,10 +38,10 @@ public class WorkerController extends Controllers {
             workersurnames.setText(worker.getSurnames());
             workeraddress.setText(worker.getAddress());
             workerphone.setText(worker.getPhone());
-            editingworker = false;
+            addingworker = false;
         } else {
             addbutton.setText("Añadir");
-            editingworker = true;
+            addingworker = true;
         }
     }
 
@@ -56,15 +57,15 @@ public class WorkerController extends Controllers {
             worker.setPhone(workerphone.getText());
         if (!workername.getText().equals("") && !workersurnames.getText().equals("") && !workeraddress.getText().equals("") && !workerphone.getText().equals("")) {
             worker.save();
-            if (editingworker)
+            if (addingworker)
                 Dialog.showInformation("", "Trabajadora añadida", "Se ha añadido correctamente a la base de datos");
             else
                 Dialog.showInformation("", "Trabajadora editada", "Se ha editado correctamente en la base de datos");
             App.closeScene((Stage) addbutton.getScene().getWindow());
-        } else if (editingworker)
-            Dialog.showWarning("Imposible editar", "Error al editar", "¡No puedes dejar ningún campo en blanco!");
-        else
+        } else if (addingworker)
             Dialog.showWarning("Imposible añadir", "Error al añadir", "¡No puedes dejar ningún campo en blanco!");
+        else
+            Dialog.showWarning("Imposible editar", "Error al editar", "¡No puedes dejar ningún campo en blanco!");
     }
 
     public static void setWorker(WorkerDAO w) {

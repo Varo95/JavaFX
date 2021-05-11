@@ -18,11 +18,12 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
 
     private static Connection con;
 
-//------------------------------------Consultas preparadas para la base de datos----------------------------------------
-    enum queries {
+    //------------------------------------Consultas preparadas para la base de datos----------------------------------------
+    private enum queries {
         INSERT("INSERT INTO worker (name,surnames, address, phone) VALUES (?,?,?,?)"),
         ALL("SELECT * FROM worker"),
         GETBYID("SELECT * FROM worker WHERE id=?"),
+        ALLTASKSBYWORKERID("SELECT * FROM task WHERE id_worker=?"),
         UPDATE("UPDATE worker SET name = ?, surnames = ?, address = ?, phone = ? WHERE id = ?"),
         //Funcion resumen de horas
         GETRESUMEHOURS("SELECT task.day, task.hours, task.hours_extra, task.festive, task.night FROM task " +
@@ -40,7 +41,7 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
         }
     }
 
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------Constructores-------------------------------------------------------
     public WorkerDAO(long id, String name, String surnames, String address, String phone, List<Task> tasks) {
         super(id, name, surnames, address, phone, tasks);
@@ -81,7 +82,30 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
         }
     }
 
-//----------------------------------------------------------------------------------------------------------------------
+    @Override
+    public List<Task> getTasks() {
+        List<Task> result = super.getTasks();
+        if (result == null) {
+            List<Object> params = new ArrayList<>();
+            params.add(this.getId());
+            try {
+                ResultSet rs = ConnectionUtil.execQuery(con, queries.ALLTASKSBYWORKERID.getQ(), params);
+                if (rs != null) {
+                    result = new ArrayList<>();
+                    while (rs.next()) {
+                        Task t = TaskDAO.instanceBuilder(rs);
+                        result.add(t);
+                    }
+                    super.setTasks(result);
+                }
+            } catch (SQLException ex) {
+                Dialog.showError("ERROR", "Error cargando la tareas de la trabajadora", ex.toString());
+            }
+        }
+        return result;
+    }
+
+    //----------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------DAO------------------------------------------------------------
     @Override
     public void remove() {
@@ -122,7 +146,7 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
         }
     }
 
-//----------------------------------------------------------------------------------------------------------------------
+    //----------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------UtilidadesDAO----------------------------------------------------------
     public static Worker instanceBuilder(ResultSet rs) {
         Worker w = new Worker();
@@ -164,17 +188,17 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
         return list;
     }
 
-    public static List<Task> getResumeHours(Connection con, long id_worker, LocalDate dateini, LocalDate dateend){
-        List<Task> result=null;
+    public static List<Task> getResumeHours(Connection con, long id_worker, LocalDate dateini, LocalDate dateend) {
+        List<Task> result = null;
         List<Object> params = new ArrayList<>();
         params.add(id_worker);
         params.add(dateini);
         params.add(dateend);
         queries q = queries.GETRESUMEHOURS;
-        try{
-            ResultSet rs = ConnectionUtil.execQuery(con, q.getQ(),params);
-            result=new ArrayList<>();
-            while(rs.next()){
+        try {
+            ResultSet rs = ConnectionUtil.execQuery(con, q.getQ(), params);
+            result = new ArrayList<>();
+            while (rs.next()) {
                 Task t = new Task();
                 t.setDate(rs.getDate(1).toLocalDate());
                 t.setHours(rs.getDouble(2));
@@ -183,7 +207,7 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
                 t.setNight(rs.getBoolean(5));
                 result.add(t);
             }
-        }catch (SQLException ex){
+        } catch (SQLException ex) {
             Dialog.showError("Error SQL", "SQL cargando el resumen", ex.toString());
         }
         return result;

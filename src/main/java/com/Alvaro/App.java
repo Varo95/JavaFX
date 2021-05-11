@@ -7,6 +7,7 @@ import javafx.scene.Scene;
 import javafx.scene.image.Image;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
+import org.kordamp.bootstrapfx.BootstrapFX;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -19,6 +20,7 @@ public class App extends Application {
     @Override
     public void start(Stage stage) throws IOException {
         Scene scene = new Scene(loadFXML("primary"), 640, 480);
+        //scene.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
         stage.setScene(scene);
         stage.getIcons().add(new Image(Objects.requireNonNull(App.class.getResourceAsStream("vitalicon.png"))));
         stage.setTitle(" Vital Asistencia");
@@ -32,7 +34,9 @@ public class App extends Application {
 
     public static void loadScene(Stage stage, String fxml, String title) throws IOException {
         Parent p = loadFXML(fxml);
-        stage.setScene(new Scene(p));
+        Scene s = new Scene(p);
+        //s.getStylesheets().add(BootstrapFX.bootstrapFXStylesheet());
+        stage.setScene(s);
         stage.getIcons().add(new Image(Objects.requireNonNull(App.class.getResourceAsStream("vitalicon.png"))));
         stage.initModality(Modality.APPLICATION_MODAL);
         stage.setTitle(title);

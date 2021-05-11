@@ -7,6 +7,9 @@ import javafx.stage.Stage;
 
 import java.util.Objects;
 
+/**
+ * Utilidades para mostrar diálogos de información
+ */
 public class Dialog {
 
     public static void showError(String title, String header, String description) {
@@ -33,21 +36,22 @@ public class Dialog {
         alert.setContentText(description);
         alert.showAndWait();
     }
+
     private static boolean showDialogBoolean(String title, String header, String description) {
-        boolean result=false;
+        boolean result = false;
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         addIcon((Stage) alert.getDialogPane().getScene().getWindow());
         alert.setTitle(title);
         alert.setHeaderText(header);
         alert.setContentText(description);
         alert.showAndWait();
-        if(alert.getResult().getButtonData().isDefaultButton()){
-            result=true;
+        if (alert.getResult().getButtonData().isDefaultButton()) {
+            result = true;
         }
         return result;
     }
 
-    private static void addIcon(Stage stage){
+    private static void addIcon(Stage stage) {
         stage.getIcons().add(new Image(Objects.requireNonNull(App.class.getResourceAsStream("vitalicon.png"))));
     }
 }

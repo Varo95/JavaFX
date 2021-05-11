@@ -1,6 +1,7 @@
 package com.Alvaro.model.DAO;
 
 import com.Alvaro.model.beans.Task;
+import com.Alvaro.model.beans.Worker;
 import com.Alvaro.model.interfaces.ITask;
 import com.Alvaro.utilities.ConnectionUtil;
 import com.Alvaro.utilities.Dialog;
@@ -18,12 +19,9 @@ public class TaskDAO extends Task implements ITask.TaskDAO {
     private Connection con;
 
 //------------------------------------Consultas preparadas para la base de datos----------------------------------------
-    enum queries {
+    private enum queries {
         INSERT("INSERT INTO task(user_com,address,day,hours,festive,night,hours_extra,id_worker) VALUES (?,?,?,?,?,?,?,?)"),
-        ALL("SELECT * FROM task"),
-        ALLBYWORKER("SELECT * FROM task WHERE id_worker=?"),
         GETBYID("SELECT * FROM task WHERE id=?"),
-        FINDBYNAME("SELECT * FROM task WHERE name LIKE ?"),
         UPDATE("UPDATE task SET user_com=?,address=?,day=?,hours=?,festive=?,night=?,hours_extra=? WHERE id=?"),
         REMOVE("DELETE FROM task WHERE id=?");
         private String q;
@@ -38,8 +36,8 @@ public class TaskDAO extends Task implements ITask.TaskDAO {
     }
 //----------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------Constructores-------------------------------------------------------
-    public TaskDAO(long id, String user_com, String address, LocalDate date, double hours, double ehours, boolean festive, boolean night, long id_worker) {
-        super(id, user_com, address, date, hours, ehours, festive, night, id_worker);
+    public TaskDAO(long id, String user_com, String address, LocalDate date, double hours, double ehours, boolean festive, boolean night, Worker worker) {
+        super(id, user_com, address, date, hours, ehours, festive, night, worker);
         try {
             con = ConnectionUtil.connect(XMLUtil.loadFile("connection.xml"));
         } catch (SQLException ex) {
@@ -64,7 +62,7 @@ public class TaskDAO extends Task implements ITask.TaskDAO {
                     setFestive(t.isFestive());
                     setNight(t.isNight());
                     setEhours(t.getEhours());
-                    setId_worker(t.getId_worker());
+                    setWorker(t.getWorker());
                 }
             }
         } catch (SQLException ex) {
@@ -107,7 +105,7 @@ public class TaskDAO extends Task implements ITask.TaskDAO {
         params.add(getEhours());
         if (getId() == -1) {
             q = TaskDAO.queries.INSERT;
-            params.add(getId_worker());
+            params.add(getWorker().getId());
         } else {
             q = TaskDAO.queries.UPDATE;
             params.add(getId());
@@ -138,7 +136,8 @@ public class TaskDAO extends Task implements ITask.TaskDAO {
                 p.setFestive(rs.getBoolean("festive"));
                 p.setNight(rs.getBoolean("night"));
                 p.setEhours(rs.getDouble("hours_extra"));
-                p.setId_worker(rs.getLong("id_worker"));
+                WorkerDAO w = new WorkerDAO(rs.getLong("id_worker"));
+                p.setWorker(w);
             } catch (SQLException ex) {
                 Dialog.showError("Error SQL", "SQL creando tarea", ex.toString());
             }
@@ -146,28 +145,6 @@ public class TaskDAO extends Task implements ITask.TaskDAO {
         return p;
     }
 
-    public static List<Task> getAllfromWorker(Connection con, long id_worker) {
-        WorkerDAO w = new WorkerDAO(id_worker);
-        List<Task> result = w.getTasks();
-        if (result == null) {
-            List<Object> params = new ArrayList<>();
-            params.add(id_worker);
-            try {
-                ResultSet rs = ConnectionUtil.execQuery(con, queries.ALLBYWORKER.getQ(), params);
-                if (rs != null) {
-                    result = new ArrayList<>();
-                    while (rs.next()) {
-                        Task t = TaskDAO.instanceBuilder(rs);
-                        result.add(t);
-                    }
-                    w.setTasks(result);
-                }
-            } catch (SQLException ex) {
-                Dialog.showError("ERROR", "Error cargando la tareas de la trabajadora", ex.toString());
-            }
-        }
-        return result;
-    }
     //Equals
     @Override
     public boolean equals(Object o) {

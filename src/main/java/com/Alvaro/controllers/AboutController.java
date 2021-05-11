@@ -1,5 +1,6 @@
 package com.Alvaro.controllers;
 
+import com.Alvaro.utilities.Dialog;
 import javafx.fxml.FXML;
 
 import java.io.IOException;
@@ -13,7 +14,7 @@ public class AboutController extends Controllers {
 
     @FXML
     protected void initialize() {
-
+        System.out.println("Cargando vista de sobre la app...");
     }
 
     @FXML
@@ -26,7 +27,7 @@ public class AboutController extends Controllers {
                     uri = new java.net.URI("https://www.paypal.me/Varo95");
                     desktop.browse(uri);
                 } catch (URISyntaxException | IOException e) {
-                    e.printStackTrace();
+                    Dialog.showError("Error URL", "Se ha producido un error", e.toString());
                 }
             }
         }
@@ -42,7 +43,7 @@ public class AboutController extends Controllers {
                     uri = new java.net.URI("https://github.com/Varo95/JavaFX");
                     desktop.browse(uri);
                 } catch (URISyntaxException | IOException e) {
-                    e.printStackTrace();
+                    Dialog.showError("Error URL", "Se ha producido un error", e.toString());
                 }
             }
         }

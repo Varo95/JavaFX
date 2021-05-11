@@ -1,5 +1,7 @@
 package com.Alvaro.model.interfaces;
 
+import com.Alvaro.model.beans.Worker;
+
 import java.time.LocalDate;
 
 public interface ITask {
@@ -37,9 +39,9 @@ public interface ITask {
 
         void setNight(boolean night);
 
-        long getId_worker();
+        Worker getWorker();
 
-        void setId_worker(long id_worker);
+        void setWorker(Worker worker);
     }
 
     interface TaskDAO {

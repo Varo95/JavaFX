@@ -14,9 +14,9 @@ public class Task implements ITask.Task {
     private double ehours;
     private boolean festive;
     private boolean night;
-    private long id_worker;
+    private Worker worker;
 
-    public Task(long id, String user_com, String address, LocalDate date, double hours, double ehours, boolean festive, boolean night, long id_worker) {
+    public Task(long id, String user_com, String address, LocalDate date, double hours, double ehours, boolean festive, boolean night, Worker worker) {
         this.id = id;
         this.user_com = user_com;
         this.address = address;
@@ -25,11 +25,11 @@ public class Task implements ITask.Task {
         this.ehours = ehours;
         this.festive = festive;
         this.night = night;
-        this.id_worker = id_worker;
+        this.worker = worker;
     }
 
     public Task() {
-        this(-1, "", "", null, -1, -1, false, false, -1);
+        this(-1, "", "", null, -1, -1, false, false, null);
     }
 
     public long getId() {
@@ -96,11 +96,11 @@ public class Task implements ITask.Task {
         this.night = night;
     }
 
-    public long getId_worker() {
-        return id_worker;
+    public Worker getWorker() {
+        return worker;
     }
 
-    public void setId_worker(long id_worker) {
-        this.id_worker = id_worker;
+    public void setWorker(Worker worker) {
+        this.worker = worker;
     }
 }
