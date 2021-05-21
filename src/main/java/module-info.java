@@ -7,6 +7,8 @@ module VitalAsistencia {
     requires javafx.fxml;
     requires mysql.connector.java;
     requires org.kordamp.bootstrapfx.core;
+    requires com.h2database;
+    requires org.postgresql.jdbc;
 
     opens com.Alvaro.controllers to javafx.fxml, org.kordamp.bootstrapfx.core;
     opens com.Alvaro.model.beans to com.sun.xml.bind, jakarta.xml.bind;

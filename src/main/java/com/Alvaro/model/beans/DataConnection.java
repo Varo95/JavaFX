@@ -10,9 +10,10 @@ import java.io.Serializable;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class DataConnection implements Serializable {
 
-    enum connectiontype{
+    private enum connectiontype{
         MYSQL("mySQL"),
-        H2("H2");
+        H2("H2"),
+        postgreSQL("postgreSQL");
         private String ct;
         connectiontype(String ct) {
             this.ct =ct;
@@ -33,6 +34,8 @@ public class DataConnection implements Serializable {
         this.password = password;
         if(type.equals(connectiontype.MYSQL.name())){
             this.type = "mySQL";
+        }else if(type.equals(connectiontype.postgreSQL.name())){
+            this.type = "postgreSQL";
         }else{
             this.type = "H2";
         }

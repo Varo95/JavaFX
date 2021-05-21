@@ -35,7 +35,6 @@ public class TaskController extends Controllers {
 
     @FXML
     protected void initialize() {
-        System.out.println("Cargando ventaña añadir/editar tarea...");
         taskhours.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("^\\d*\\.?\\d*")) {
                 taskhours.setText(newValue.replaceAll("[^\\d*.?]", ""));
@@ -44,6 +43,15 @@ public class TaskController extends Controllers {
         taske_hours.textProperty().addListener((observable, oldValue, newValue) -> {
             if (!newValue.matches("^\\d*\\.?\\d*")) {
                 taske_hours.setText(newValue.replaceAll("[^\\d*.?]", ""));
+            }
+        });
+        taskdatepicker.valueProperty().addListener((ov, oldValue, newValue) -> {
+            if(newValue.getDayOfWeek().getValue()==7){
+                festivecb.setSelected(true);
+                festivecb.setDisable(true);
+            }else{
+                festivecb.setSelected(false);
+                festivecb.setDisable(false);
             }
         });
         if (task.getId() != -1) {

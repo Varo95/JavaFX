@@ -40,9 +40,8 @@ public class XMLUtil {
             }
         } else {
             Dialog.showWarning("Aviso", "No existe el fichero xml", "Se creará un nuevo fichero xml con datos");
-            DataConnection dc = new DataConnection("", "vital", "root", "12345", "H2");
-            saveFile(path, dc);
-            result = dc;
+            result = new DataConnection("", "vital", "root", "12345", "H2");
+            saveFile(path, result);
         }
         return result;
     }

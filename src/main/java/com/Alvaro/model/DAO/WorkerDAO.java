@@ -18,7 +18,7 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
 
     private static Connection con;
 
-    //------------------------------------Consultas preparadas para la base de datos----------------------------------------
+//------------------------------------Consultas preparadas para la base de datos----------------------------------------
     private enum queries {
         INSERT("INSERT INTO worker (name,surnames, address, phone) VALUES (?,?,?,?)"),
         ALL("SELECT * FROM worker"),
@@ -41,7 +41,7 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //--------------------------------------------------Constructores-------------------------------------------------------
     public WorkerDAO(long id, String name, String surnames, String address, String phone, List<Task> tasks) {
         super(id, name, surnames, address, phone, tasks);
@@ -105,7 +105,7 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
         return result;
     }
 
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //-------------------------------------------------------DAO------------------------------------------------------------
     @Override
     public void remove() {
@@ -146,7 +146,7 @@ public class WorkerDAO extends Worker implements IWorker.WorkerDAO {
         }
     }
 
-    //----------------------------------------------------------------------------------------------------------------------
+//----------------------------------------------------------------------------------------------------------------------
 //-----------------------------------------------UtilidadesDAO----------------------------------------------------------
     public static Worker instanceBuilder(ResultSet rs) {
         Worker w = new Worker();

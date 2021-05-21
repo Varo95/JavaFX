@@ -2,6 +2,8 @@ package com.Alvaro.controllers;
 
 import com.Alvaro.utilities.Dialog;
 import javafx.fxml.FXML;
+import java.awt.Desktop;
+import java.net.URI;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
@@ -19,12 +21,12 @@ public class AboutController extends Controllers {
 
     @FXML
     protected void paypal() {
-        if (java.awt.Desktop.isDesktopSupported()) {
-            java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-            if (desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
-                java.net.URI uri;
+        if (Desktop.isDesktopSupported()) {
+            Desktop desktop = Desktop.getDesktop();
+            if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                URI uri;
                 try {
-                    uri = new java.net.URI("https://www.paypal.me/Varo95");
+                    uri = new URI("https://www.paypal.me/Varo95");
                     desktop.browse(uri);
                 } catch (URISyntaxException | IOException e) {
                     Dialog.showError("Error URL", "Se ha producido un error", e.toString());
@@ -35,12 +37,12 @@ public class AboutController extends Controllers {
 
     @FXML
     private void github() {
-        if (java.awt.Desktop.isDesktopSupported()) {
-            java.awt.Desktop desktop = java.awt.Desktop.getDesktop();
-            if (desktop.isSupported(java.awt.Desktop.Action.BROWSE)) {
-                java.net.URI uri;
+        if (Desktop.isDesktopSupported()) {
+            Desktop desktop = Desktop.getDesktop();
+            if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                URI uri;
                 try {
-                    uri = new java.net.URI("https://github.com/Varo95/JavaFX");
+                    uri = new URI("https://github.com/Varo95/JavaFX");
                     desktop.browse(uri);
                 } catch (URISyntaxException | IOException e) {
                     Dialog.showError("Error URL", "Se ha producido un error", e.toString());

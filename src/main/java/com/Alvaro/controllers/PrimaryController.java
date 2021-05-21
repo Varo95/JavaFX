@@ -9,7 +9,6 @@ import com.Alvaro.utilities.ConnectionUtil;
 import com.Alvaro.utilities.Dialog;
 import com.Alvaro.utilities.XMLUtil;
 import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
@@ -209,7 +208,7 @@ public class PrimaryController extends Controllers {
             String workerName = workerTable.getSelectionModel().selectedItemProperty().get().getName();
             String workerSurname = workerTable.getSelectionModel().selectedItemProperty().get().getSurnames();
             try {
-                SecondaryController.setWorker(new WorkerDAO (workerTable.getSelectionModel().getSelectedItem().getId()));
+                SecondaryController.setWorker(new WorkerDAO(workerTable.getSelectionModel().getSelectedItem().getId()));
                 App.loadScene(new Stage(), "secondary", "Tareas de " + workerName + " " + workerSurname);
             } catch (IOException e) {
                 Dialog.showError("Error en la vista", "No se pudo cargar la vista de tareas trabajadora", e.toString());
@@ -263,9 +262,8 @@ public class PrimaryController extends Controllers {
 
     private void splitpanelnotdraggable() {
         final double pos = 0.34;
-        SplitPane.Divider divider = primarySplitPane.getDividers().get(0);
-        divider.positionProperty().addListener(
-                (ObservableValue<? extends Number> observable, Number oldValue, Number newValue) ->
-                        divider.setPosition(pos));
+        primarySplitPane.getDividers().get(0).positionProperty().addListener(
+                (observable, oldValue, newValue) ->
+                        primarySplitPane.setDividerPosition(0,pos));
     }
 }

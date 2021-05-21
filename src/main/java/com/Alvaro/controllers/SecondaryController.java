@@ -36,6 +36,8 @@ public class SecondaryController extends Controllers {
     @FXML
     private TableView<Task> taskTable;
     @FXML
+    private SplitPane secondarySplitPane;
+    @FXML
     private TableColumn<Task, String> user_com_colum;
     @FXML
     private TableColumn<Task, String> address_colum;
@@ -46,9 +48,8 @@ public class SecondaryController extends Controllers {
 
     @FXML
     protected void initialize() {
-        System.out.println("Cargando vista secundaria...");
-        DataConnection dc = XMLUtil.loadFile("connection.xml");
         showInfo(null);
+        splitpanelimiter();
         configureTable();
         list = FXCollections.observableArrayList(worker.getTasks());
         taskTable.setItems(list);
@@ -138,6 +139,18 @@ public class SecondaryController extends Controllers {
             t.remove();
             list.remove(taskTable.getSelectionModel().getSelectedItem());
         }
+    }
+
+    private void splitpanelimiter() {
+        final double pos1 = 0.40;
+        final double pos2 = 0.5685160427807485;
+        secondarySplitPane.getDividers().get(0).positionProperty().addListener(
+                (observable, oldValue, newValue) -> {
+                    if (newValue.doubleValue() < pos1)
+                        secondarySplitPane.setDividerPosition(0, pos1);
+                    if (newValue.doubleValue() > pos2)
+                        secondarySplitPane.setDividerPosition(0, pos2);
+                });
     }
 
     public static void setWorker(WorkerDAO worker1) {

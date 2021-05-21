@@ -1,6 +1,5 @@
 package com.Alvaro.utilities;
 
-
 import com.Alvaro.model.beans.DataConnection;
 
 import java.sql.*;
@@ -11,43 +10,52 @@ import java.util.List;
  */
 public class ConnectionUtil {
 
+    private static Connection con;
+
     public static Connection connect(DataConnection c) throws SQLException {
-        Connection conn;
         if (c == null) {
             return null;
         }
-        conn = switch (c.getType()) {
-            case "mySQL" -> DriverManager.getConnection("jdbc:mysql://" + c.getHost() + "/" + c.getDb(), c.getUser(), c.getPassword());
-            case "H2" -> DriverManager.getConnection("jdbc:h2:./" + c.getDb() + ";USER=" + c.getUser() + ";PASSWORD=" + c.getPassword());
-            case "postgreSQL" -> DriverManager.getConnection("jdbc:postgresql://" + c.getHost() + "/" + c.getDb(), c.getUser(), c.getPassword());
-            default -> null;
-        };
-        checkStructure(conn, c.getType());
-        return conn;
+        if (con == null) {
+            org.postgresql.Driver a = new org.postgresql.Driver();
+            org.h2.Driver b = new org.h2.Driver();
+            con = switch (c.getType()) {
+                case "mySQL" -> DriverManager.getConnection("jdbc:mysql://" + c.getHost() + "/" + c.getDb(), c.getUser(), c.getPassword());
+                case "postgreSQL" -> DriverManager.getConnection("jdbc:postgresql://" + c.getHost() + "/" + c.getDb(), c.getUser(), c.getPassword());
+                case "H2" -> DriverManager.getConnection("jdbc:h2:./" + c.getDb() + ";USER=" + c.getUser() + ";PASSWORD=" + c.getPassword());
+                default -> null;
+            };
+        }
+        checkStructure(con, c.getType());
+        return con;
     }
+
     /**
      * Esta función ejecuta consultas de un PreparedStatement
-     * @param con Conexión a la BBDD
-     * @param q Sentencia a ejecutar
+     *
+     * @param con    Conexión a la BBDD
+     * @param q      Sentencia a ejecutar
      * @param params parámetros de la sentencia
      * @return El último id insertado ó el número de filas afectadas de la consulta
      * @throws SQLException en caso de que no se pueda ejecutar bien la sentencia
      */
     public static ResultSet execQuery(Connection con, String q, List<Object> params) throws SQLException {
         ResultSet result;
-        if (con == null) {
-            return null;
+        if (con != null) {
+            PreparedStatement ps = prepareQuery(con, q, params);
+            result = ps.executeQuery();
+        } else {
+            result = null;
         }
-        PreparedStatement ps = prepareQuery(con, q, params);
-        result = ps.executeQuery();
         return result;
     }
 
     /**
      * Este método devuelve PreparedStatements a partir de una lista de objetos que se le pasan como parámetro
      * Esta lista debe estar en orden
-     * @param con Conexión de la que preparar la sentencia
-     * @param q Sentencia con "?"
+     *
+     * @param con    Conexión de la que preparar la sentencia
+     * @param q      Sentencia con "?"
      * @param params parámetros a sustituir las "?"
      * @return PreparedStatement ya listo
      * @throws SQLException en caso de que haya más parámetros de los debidos
@@ -58,15 +66,7 @@ public class ConnectionUtil {
         if (params != null) {
             int i = 1;
             for (Object o : params) {
-                switch (is(params)) {
-                    case 0 -> ps.setInt(i++, (Integer) o);
-                    case 1 -> ps.setFloat(i++, (Float) o);
-                    case 2 -> ps.setDouble(i++, (Double) o);
-                    case 3 -> ps.setBoolean(i++, (Boolean) o);
-                    case 4 -> ps.setString(i++, (String) o);
-                    case 5 -> ps.setArray(i++, (Array) o);
-                    default -> ps.setObject(i++, o);
-                }
+                ps.setObject(i++, o);
             }
         }
         return ps;
@@ -74,35 +74,38 @@ public class ConnectionUtil {
 
     /**
      * Esta función ejecuta actualizaciones de un PreparedStatement
-     * @param con Conexión a la BBDD
-     * @param q Sentencia a ejecutar
+     *
+     * @param con    Conexión a la BBDD
+     * @param q      Sentencia a ejecutar
      * @param params parámetros de la sentencia
      * @param insert Si es true devuelve el último id insertado
      * @return El último id insertado ó el número de filas afectadas de la consulta
      * @throws SQLException en caso de que no se haya podido ejecutar la sentencia bien
      */
     public static int execUpdate(Connection con, String q, List<Object> params, boolean insert) throws SQLException {
-        if (con == null) {
-            return -1;
-        }
-        PreparedStatement ps = prepareQuery(con, q, params);
-        int result = ps.executeUpdate();
-        if (insert) {
-            try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
-                if (generatedKeys.next()) {
-                    return generatedKeys.getInt(1);
-                } else {
-                    return -1;
+        int result;
+        if (con != null) {
+            PreparedStatement ps = prepareQuery(con, q, params);
+            result = ps.executeUpdate();
+            if (insert) {
+                try (ResultSet generatedKeys = ps.getGeneratedKeys()) {
+                    if (generatedKeys.next()) {
+                        result = generatedKeys.getInt(1);
+                    } else {
+                        result = -1;
+                    }
                 }
             }
         } else {
-            return result;
+            result = -1;
         }
+        return result;
     }
 
     /**
      * Esta función revisa que las tablas estén creadas y en caso contrario, las crea con las claves foráneas.
      * TODO verificar postgreSQL
+     *
      * @param con  Conexión a la BBDD
      * @param type Tipo de conexión(H2, mySQL...)
      */
@@ -168,13 +171,5 @@ public class ConnectionUtil {
             Dialog.showError("ERROR", "Error creando tablas", ex.toString());
         }
     }
-
-    private static int is(Integer n) {return 0;}
-    private static int is(Float n) {return 1;}
-    private static int is(Double n) {return 2;}
-    private static int is(Boolean n) {return 3;}
-    private static int is(String n) {return 4;}
-    private static int is(Array n) {return 5;}
-    private static int is(Object n) {return 6;}
 
 }
